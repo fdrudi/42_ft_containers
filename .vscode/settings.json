@@ -1,0 +1,11 @@
+{
+	"files.associations": {
+		"ex02": "c",
+		"bitset": "cpp",
+		"initializer_list": "cpp",
+		"iterator": "cpp",
+		"memory": "cpp",
+		"string": "cpp",
+		"string_view": "cpp"
+	}
+}
