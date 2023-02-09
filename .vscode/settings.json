@@ -6,6 +6,24 @@
 		"iterator": "cpp",
 		"memory": "cpp",
 		"string": "cpp",
-		"string_view": "cpp"
+		"string_view": "cpp",
+		"__bit_reference": "cpp",
+		"__hash_table": "cpp",
+		"__split_buffer": "cpp",
+		"__tree": "cpp",
+		"algorithm": "cpp",
+		"array": "cpp",
+		"deque": "cpp",
+		"functional": "cpp",
+		"list": "cpp",
+		"map": "cpp",
+		"set": "cpp",
+		"unordered_map": "cpp",
+		"vector": "cpp",
+		"queue": "cpp",
+		"sstream": "cpp",
+		"stack": "cpp",
+		"chrono": "cpp",
+		"tuple": "cpp"
 	}
 }
