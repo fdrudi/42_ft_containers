@@ -38,7 +38,8 @@ namespace ft
 		private:
 
 		allocator_type	_alloc;
-		size_type		_count;
+		size_type		_size;
+		pointer			_max;
 		pointer			_begin;
 		pointer			_end;
 
