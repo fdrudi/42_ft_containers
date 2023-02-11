@@ -68,7 +68,16 @@ namespace ft
 		};
 
 		template< class InputIt >
-		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() );
+		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ):
+		_alloc(alloc),
+		_size(0),
+		_capacity(0),
+		_last(NULL),
+		_begin(NULL),
+		_end(NULL)
+		{
+			
+		};
 
 		// vector( const vector& other );
 
