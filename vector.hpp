@@ -21,28 +21,67 @@ namespace ft
 		typedef	ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef	ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 
-		vector()
+// * COSTRUTTORI * //
+
+// Costruttore default (forse da togliere)
+		explicit vector():
+		_alloc(allocator_type()),
+		_size(0),
+		_capacity(0),
+		_last(NULL),
+		_begin(NULL),
+		_end(NULL)
 		{};
 
-		// explicit vector( const Allocator& alloc );
+// Costruttore con tipo di Allocator
+		explicit vector(const allocator_type& alloc = allocator_type()):
+		_alloc(alloc),
+		_size(0),
+		_capacity(0),
+		_last(NULL),
+		_begin(NULL),
+		_end(NULL)
+		{};
 
-		// explicit vector( size_type count,
-        //          const T& value = T(),
-        //          const Allocator& alloc = Allocator());
+// Costruttore con 'count' copie dell'elemento 'val'
+		explicit vector(size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()):
+		_alloc(alloc),
+		_size(0),
+		_capacity(0),
+		_last(NULL),
+		_begin(NULL),
+		_end(NULL)
+		{
+			if (n >= 0 && n < this->max_size())
+			{
+				_size = n;
+				_capacity = n;
+				_begin = _alloc.allocate(_capacity);
+				_end = _begin;
+				while (n--)
+					_alloc.construct(_end++, val);
+				_last = _end;
+				_last--;
+			}
+			else
+				throw std::length_error("vector");
+		};
 
-		// template< class InputIt >
-		// vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
+		template< class InputIt >
+		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() );
 
 		// vector( const vector& other );
 
 		private:
 
-		allocator_type	_alloc;
-		size_type		_size;
-		pointer			_max;
-		pointer			_begin;
-		pointer			_end;
-
+		allocator_type	_alloc; //istanza dell'allocatore utilizzato per gestire la memoria utilizzata dal vettore
+		size_type		_size; //dimensione attuale / numero di elementi memorizzati nel vettore
+		size_type		_capacity; //dimensione massima che il vettore può raggiungere prima che sia necessario allocare più memoria
+		pointer			_begin; //puntatore all'inizio del vettore
+		pointer			_end; //puntatore alla fine del vettore
+		pointer			_last; /*puntatore all'ultimo elemento allocato del vettore. Utile per sapere se è necessario allocare più memoria
+							     quando si inseriscono nuovi elementi nel vettore. In questo modo, puoi verificare se c'è spazio sufficiente
+							     per inserire nuovi elementi prima di allocare più memoria*/
 
 	};
 }
