@@ -30,6 +30,8 @@
 		"__locale": "cpp",
 		"memory_resource": "cpp",
 		"locale": "cpp",
-		"optional": "cpp"
+		"optional": "cpp",
+		"type_traits": "cpp",
+		"typeinfo": "cpp"
 	}
 }

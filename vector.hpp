@@ -23,16 +23,6 @@ namespace ft
 
 // * COSTRUTTORI * //
 
-// Costruttore default (forse da togliere)
-		explicit vector():
-		_alloc(allocator_type()),
-		_size(0),
-		_capacity(0),
-		_last(NULL),
-		_begin(NULL),
-		_end(NULL)
-		{};
-
 // Costruttore con tipo di Allocator
 		explicit vector(const allocator_type& alloc = allocator_type()):
 		_alloc(alloc),
@@ -67,19 +57,68 @@ namespace ft
 				throw std::length_error("vector");
 		};
 
-		template< class InputIt >
-		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type() ):
+// Costruttore con range da 'first' a 'last'
+		template< class InputIt >																		// Controllo eseguito al run-time se il type è integral
+		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = 0 ):
 		_alloc(alloc),
-		_size(0),
-		_capacity(0),
-		_last(NULL),
-		_begin(NULL),
-		_end(NULL)
 		{
-			
+			bool is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value;
+			if (!is_valid)
+				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
+			difference_type n = ft::distance(first, last);
+			_size = n;
+			_capacity = n;
+			_begin = _alloc.allocate(_capacity);
+			_end = _begin;
+			while (n--)
+			{
+				_alloc.construct(_end, *first);
+				_end++;
+				first++;
+			}
+			_last = _end;
+			_last--;
 		};
 
-		// vector( const vector& other );
+// Copy Constructor
+		vector( const vector& other ):
+		_alloc(other._alloc),
+		_size(other._size),
+		_capacity(other._capacity),
+		_begin(other._alloc.allocate(other._capacity)),
+		{
+
+			if (!other.empty()) // DA IMPLEMENTARE
+				assign(other.begin(), other.end()); // DA IMPLEMENTARE
+			_end = _begin + _size;
+			_last = _end - 1;
+		};
+
+// Copy Assign operator
+		vector&	operator=(const vector &other)
+		{
+			if (other == *this)
+				return (*this);
+			this->clear(); // DA IMPLEMENTARE (destroy chiama il distruttore dell'oggetto all'interno del vettore)
+			if (this->capacity()) // DA IMPLEMENTARE
+			{
+				_alloc.deallocate(_begin, _capacity); // DA IMPLEMENTARE (deallocate libera la memoria allocata)
+				_begin = _alloc.allocate(other.capacity()); // DA IMPLEMENTARE
+				_capacity = other.capacity(); // DA IMPLEMENTARE
+				_end = _begin;
+			}
+			this->insert(this->end(), other.begin(), other.end()); // DA IMPLEMENTARE
+			_last = _end - 1;
+			return (*this);
+		};
+
+// Distruttore
+		~vector()
+		{
+			this->clear();
+			if (this->_begin != NULL || _capacity != 0)
+				_alloc.deallocate(_begin, _capacity);
+		}
 
 		private:
 
@@ -88,9 +127,9 @@ namespace ft
 		size_type		_capacity; //dimensione massima che il vettore può raggiungere prima che sia necessario allocare più memoria
 		pointer			_begin; //puntatore all'inizio del vettore
 		pointer			_end; //puntatore alla fine del vettore
-		pointer			_last; /*puntatore all'ultimo elemento allocato del vettore. Utile per sapere se è necessario allocare più memoria
+		pointer			_last; /* puntatore all'ultimo elemento allocato del vettore. Utile per sapere se è necessario allocare più memoria
 							     quando si inseriscono nuovi elementi nel vettore. In questo modo, puoi verificare se c'è spazio sufficiente
-							     per inserire nuovi elementi prima di allocare più memoria*/
+							     per inserire nuovi elementi prima di allocare più memoria */
 
 	};
 }
