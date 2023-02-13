@@ -126,14 +126,14 @@ namespace ft
 					return (*this);
 				this->_pointed = rhs._pointed;
 				// this->_value = value_type();
-				return (*this);	
+				return (*this);
 			}
 			virtual ~random_access_iterator(){};
 			reference				operator*() const { return (*_pointed); }
 			pointer					operator->() { return &(this->operator*()); }
 			random_access_iterator	operator+(difference_type n) const { return (_pointed + n); }
 			random_access_iterator	operator-(difference_type n) const { return (_pointed - n); }
-			
+
 			random_access_iterator&	operator++()
 			{
 				_pointed++;
@@ -296,8 +296,8 @@ namespace ft
 				sentinel = NULL;
 				c = Compare();
 			};
-			
-			RBIterator(NodeType* start) : 
+
+			RBIterator(NodeType* start) :
 				node(start),
 				sentinel(findSentinel()),
 				root(findRoot()),
@@ -305,7 +305,7 @@ namespace ft
 				maxNode(max(root)),
 				c(Compare())
 			{};
-			
+
 			RBIterator(NodeType* start, NodeType* endPtr) :
 				node(start),
 				sentinel(endPtr),
@@ -314,7 +314,7 @@ namespace ft
 				maxNode(max(root)),
 				c(Compare())
 			{};
-			
+
 			RBIterator(RBIterator const & src) :
 				node(src.node),
 				sentinel(src.sentinel),
@@ -331,7 +331,7 @@ namespace ft
 				minNode(src.minNode),
 				maxNode(src.maxNode)
 			{};
-			
+
 			RBIterator&	operator=(RBIterator const & rhs)
 			{
 				if (this == &rhs)
@@ -343,7 +343,7 @@ namespace ft
 				this->maxNode = rhs.maxNode;
 				return (*this);
 			}
-			
+
 			template <class InputIt>
 			RBIterator&	operator=(InputIt const & rhs)
 			{
@@ -354,16 +354,16 @@ namespace ft
 				this->maxNode = rhs.maxNode;
 				return (*this);
 			}
-			
+
 			~RBIterator() {};
 
-			
+
 			// Overloads
 
 			reference			operator*() const { return (this->node->data); }
 			pointer				operator->() const { return &(this->node->data); }
 			bool				operator==(RBIterator const & rhs) { return ((this->node == rhs.node) ? true : false); }
-			
+
 			bool				operator!=(RBIterator const & rhs)
 			{
 				if ((this->node && !rhs.node) || (!this->node && rhs.node))
@@ -372,13 +372,13 @@ namespace ft
 					return (false);
 				return ((this->node == rhs.node) ? false : true);
 			}
-			
+
 			RBIterator&	operator++()
 			{
 				this->node = getSuccessor(this->node);
 				return (*this);
 			};
-			
+
 			RBIterator	operator++(int)
 			{
 				RBIterator	ret(*this);
@@ -386,13 +386,13 @@ namespace ft
 				++(*this);
 				return (ret);
 			};
-			
+
 			RBIterator&	operator--()
 			{
 				this->node = getPredecessor(this->node);
 				return (*this);
 			};
-			
+
 			RBIterator	operator--(int)
 			{
 				RBIterator	ret(*this);
@@ -408,7 +408,7 @@ namespace ft
 					ret--;
 				return (ret);
 			}
-			
+
 			RBIterator	operator+(difference_type n) const
 			{
 				RBIterator	ret(*this);
@@ -429,7 +429,7 @@ namespace ft
 					node = &(*node)->child[0];
 				return (*node);
 			}
-			
+
 			nodePointer	min(nodePointer& node)
 			{
 				nodePointer*	tmp = &node;
@@ -441,7 +441,7 @@ namespace ft
 					tmp = &((*tmp)->child[0]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	max()
 			{
 				nodePointer*	node = &root;
@@ -453,7 +453,7 @@ namespace ft
 					node = &(*node)->child[1];
 				return (*node);
 			}
-			
+
 			nodePointer	max(nodePointer& node)
 			{
 				nodePointer*	tmp = &node;
@@ -465,11 +465,11 @@ namespace ft
 					tmp = &((*tmp)->child[1]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	findSentinel()
 			{
 				nodePointer*	tmp = &this->node;
-				
+
 				if (!(*tmp) || !tmp)
 					return (NULL);
 
@@ -477,7 +477,7 @@ namespace ft
 					tmp = &((*tmp)->child[0]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	findRoot()
 			{
 				nodePointer*	tmp = &this->node;
@@ -489,7 +489,7 @@ namespace ft
 			nodePointer	getSuccessor(nodePointer & node)
 			{
 				nodePointer*	tmp = &node;
-			
+
 				if (node == sentinel)
 					return (sentinel);
 				if (node == max(sentinel->parent))
@@ -516,7 +516,7 @@ namespace ft
 			nodePointer	getPredecessor(nodePointer & node)
 			{
 				nodePointer*	tmp = &node;
-				
+
 				if (node == sentinel)
 					return (max(node->parent));
 				if (node == min(sentinel->parent))
@@ -563,8 +563,8 @@ namespace ft
 				sentinel = NULL;
 				c = Compare();
 			};
-			
-			RBIteratorConst(NodeType* start) : 
+
+			RBIteratorConst(NodeType* start) :
 				node(start),
 				sentinel(findSentinel()),
 				root(findRoot()),
@@ -572,7 +572,7 @@ namespace ft
 				maxNode(max(root)),
 				c(Compare())
 			{};
-			
+
 			RBIteratorConst(NodeType* start, NodeType* endPtr) :
 				node(start),
 				sentinel(endPtr),
@@ -581,7 +581,7 @@ namespace ft
 				maxNode(max(root)),
 				c(Compare())
 			{};
-			
+
 			RBIteratorConst(RBIteratorConst const & src) :
 				node(src.node),
 				sentinel(src.sentinel),
@@ -589,7 +589,7 @@ namespace ft
 				minNode(src.minNode),
 				maxNode(src.maxNode)
 			{};
-			
+
 			template <class InputIt>
 			RBIteratorConst(InputIt const & src)
 			{
@@ -601,7 +601,7 @@ namespace ft
 				minNode = src.minNode;
 				maxNode = src.maxNode;
 			};
-			
+
 			RBIteratorConst&	operator=(RBIteratorConst const & rhs)
 			{
 				if (this == &rhs)
@@ -613,7 +613,7 @@ namespace ft
 				this->maxNode = rhs.maxNode;
 				return (*this);
 			}
-			
+
 			template <class InputIt>
 			RBIteratorConst&	operator=(InputIt const & rhs)
 			{
@@ -624,16 +624,16 @@ namespace ft
 				this->maxNode = rhs.maxNode;
 				return (*this);
 			}
-			
+
 			~RBIteratorConst() {};
 
-			
+
 			// Overloads
 
 			reference			operator*() const { return (this->node->data); }
 			pointer				operator->() const { return &(this->node->data); }
 			bool				operator==(RBIteratorConst const & rhs) { return ((this->node == rhs.node) ? true : false); }
-			
+
 			bool				operator!=(RBIteratorConst const & rhs)
 			{
 				if ((this->node && !rhs.node) || (!this->node && rhs.node))
@@ -642,13 +642,13 @@ namespace ft
 					return (false);
 				return ((this->node == rhs.node) ? false : true);
 			}
-			
+
 			RBIteratorConst&	operator++()
 			{
 				this->node = getSuccessor(this->node);
 				return (*this);
 			};
-			
+
 			RBIteratorConst	operator++(int)
 			{
 				RBIteratorConst	ret(*this);
@@ -656,13 +656,13 @@ namespace ft
 				++(*this);
 				return (ret);
 			};
-			
+
 			RBIteratorConst&	operator--()
 			{
 				this->node = getPredecessor(this->node);
 				return (*this);
 			};
-			
+
 			RBIteratorConst	operator--(int)
 			{
 				RBIteratorConst	ret(*this);
@@ -678,7 +678,7 @@ namespace ft
 					ret--;
 				return (ret);
 			}
-			
+
 			RBIteratorConst	operator+(difference_type n) const
 			{
 				RBIteratorConst	ret(*this);
@@ -699,7 +699,7 @@ namespace ft
 					node = &(*node)->child[0];
 				return (*node);
 			}
-			
+
 			nodePointer	min(nodePointer& node)
 			{
 				nodePointer*	tmp = &node;
@@ -711,7 +711,7 @@ namespace ft
 					tmp = &((*tmp)->child[0]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	max()
 			{
 				nodePointer*	node = &root;
@@ -723,7 +723,7 @@ namespace ft
 					node = &(*node)->child[1];
 				return (*node);
 			}
-			
+
 			nodePointer	max(nodePointer& node)
 			{
 				nodePointer*	tmp = &node;
@@ -735,11 +735,11 @@ namespace ft
 					tmp = &((*tmp)->child[1]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	findSentinel()
 			{
 				nodePointer*	tmp = &this->node;
-				
+
 				if (!(*tmp) || !tmp)
 					return (NULL);
 
@@ -747,7 +747,7 @@ namespace ft
 					tmp = &((*tmp)->child[0]);
 				return (*tmp);
 			}
-			
+
 			nodePointer	findRoot()
 			{
 				nodePointer*	tmp = &this->node;
@@ -759,7 +759,7 @@ namespace ft
 			nodePointer	getSuccessor(nodePointer & node)
 			{
 				nodePointer*	tmp = &node;
-			
+
 				if (node == sentinel)
 					return (sentinel);
 				if (node == max(sentinel->parent))
@@ -786,7 +786,7 @@ namespace ft
 			nodePointer	getPredecessor(nodePointer & node)
 			{
 				nodePointer*	tmp = &node;
-				
+
 				if (node == sentinel)
 					return (max(node->parent));
 				if (node == min(sentinel->parent))
@@ -852,7 +852,7 @@ namespace ft
 
 	template <class InputIt, class InputIt2>
 	bool	operator>(random_access_iterator<InputIt> const & lhs, random_access_iterator<InputIt2> const & rhs) { return ((lhs.pointed() > rhs.pointed()) ? true : false); };
-	
+
 	template <class InputIt>
 	bool	operator>=(random_access_iterator<InputIt> const & lhs, random_access_iterator<InputIt> const & rhs) { return ((lhs.pointed() >= rhs.pointed()) ? true : false); };
 
@@ -888,13 +888,13 @@ namespace ft
 
 	template <class InputIt, class InputIt2>
 	bool	operator>(reverse_iterator<InputIt> const & lhs, reverse_iterator<InputIt2> const & rhs) { return ((lhs.base() < rhs.base()) ? true : false); };
-	
+
 	template <class InputIt>
 	bool	operator>=(reverse_iterator<InputIt> const & lhs, reverse_iterator<InputIt> const & rhs) { return ((lhs.base() <= rhs.base()) ? true : false); };
 
 	template <class InputIt, class InputIt2>
 	bool	operator>=(reverse_iterator<InputIt> const & lhs, reverse_iterator<InputIt2> const & rhs) { return ((lhs.base() <= rhs.base()) ? true : false); };
-	
+
 	// template <class InputIterator>
 	// bool	operator<(reverse_iterator<InputIterator> const lhs, reverse_iterator<InputIterator> const rhs)
 	// {

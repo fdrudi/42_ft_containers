@@ -88,7 +88,7 @@ namespace ft
 		_begin(other._alloc.allocate(other._capacity)),
 		{
 
-			if (!other.empty()) // DA IMPLEMENTARE
+			if (!other.empty())
 				assign(other.begin(), other.end()); // DA IMPLEMENTARE
 			_end = _begin + _size;
 			_last = _end - 1;
@@ -100,11 +100,11 @@ namespace ft
 			if (other == *this)
 				return (*this);
 			this->clear(); // DA IMPLEMENTARE (destroy chiama il distruttore dell'oggetto all'interno del vettore)
-			if (this->capacity()) // DA IMPLEMENTARE
+			if (this->capacity())
 			{
-				_alloc.deallocate(_begin, _capacity); // DA IMPLEMENTARE (deallocate libera la memoria allocata)
-				_begin = _alloc.allocate(other.capacity()); // DA IMPLEMENTARE
-				_capacity = other.capacity(); // DA IMPLEMENTARE
+				_alloc.deallocate(_begin, _capacity); // (deallocate libera la memoria allocata)
+				_begin = _alloc.allocate(other.capacity());
+				_capacity = other.capacity();
 				_end = _begin;
 			}
 			this->insert(this->end(), other.begin(), other.end()); // DA IMPLEMENTARE
@@ -119,6 +119,72 @@ namespace ft
 			if (this->_begin != NULL || _capacity != 0)
 				_alloc.deallocate(_begin, _capacity);
 		}
+
+// * MEMBER FUNCTION *//
+
+// Capacity
+
+		size_type		size() const { return (_size); };
+		size_type		max_size() const { return (allocator_type().max_size()); }; // ritorna la massima capacità ipotetica che si può dare come argomento a reserve().
+
+		void 			resize (size_type n, value_type val = value_type())
+		{
+			size_type	new_capacity; // Sor Lazzaris Do your own things!!!!
+		};
+
+		size_type		capacity() const { return (_capacity); };
+		bool			empty() const { return (_size == 0); };
+
+		void reserve(size_type n) // riserva spazio allocato per n elementi
+		{
+			pointer	prev_begin;
+			pointer prev_end;
+			pointer	tmp_begin;
+			size_type	prev_capacity;
+
+			if (_capacity >= n)
+				return ;
+			if (n > max_size())
+				throw std::length_error("ft::vector::reserve()");
+
+			prev_begin = _begin;
+			tmp_begin = prev_begin;
+			prev_end = _end;
+			prev_capacity = _capacity;
+
+			_begin = _alloc.allocate(n, 0);
+			_capacity = n;
+			_end = _begin;
+
+			while (prev_begin != prev_end) // parte a copiare gli elementi solo se esistevano già
+			{
+				_alloc.construct(_end++, *prev_begin); // inserisce nel punto _end il contenuto del punto prev_begin
+				prev_begin++;
+			}
+			_last = _begin + n;
+			if (tmp_begin && tmp_begin != _begin) // elimina lo spazio predefinito e non più utilizzato
+				_alloc.deallocate(tmp_begin, prev_capacity);
+		};
+
+// Element access
+
+		/* NB: per gli operator[], la documentazione parla di "undefined behaviour" nel caso di utilizzo improprio del parametro n. */
+		reference		operator[] (size_type n) { return (*(_begin + n))};
+		const_reference	operator[] (size_type n) const { return (*(_begin + n))};
+
+		reference		at(size_type n)
+		{
+			if (n < 0 || n > _size)
+				throw	std::out_of_range("ft::vector::at()");
+			return (*(_begin + n));
+		};
+
+		const_reference	at(size_type n) const
+		{
+			if (n < 0 || n > _size)
+				throw	std::out_of_range("ft::vector::at()");
+			return (*(_begin + n));
+		};
 
 		private:
 
