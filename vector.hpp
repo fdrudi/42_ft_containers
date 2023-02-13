@@ -122,6 +122,17 @@ namespace ft
 
 // * MEMBER FUNCTION *//
 
+// Iterators
+
+		iterator				begin()			{ return (iterator(_begin)); };
+		const_iterator			begin() const	{ return (const_iterator(_begin)); };
+		iterator				end()			{ return (iterator(_begin + _size)) };
+		const_iterator			end() const		{ return (const_iterator(_begin + _size)) };
+		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) };
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) };
+		reverse_iterator		rend()			{ return (reverse_iterator(begin())) };
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) };
+
 // Capacity
 
 		size_type		size() const { return (_size); };
@@ -185,6 +196,13 @@ namespace ft
 				throw	std::out_of_range("ft::vector::at()");
 			return (*(_begin + n));
 		};
+
+		reference			front() { return (*_begin); };
+		const_reference		front() const { return (*_begin); };
+		reference			back() { return (*(_begin + _size)); };
+		const_reference		back() const { return (*(_begin + _size)); };
+		value_type*			data() { return (_begin); };
+		const value_type*	data() const { return (_begin); };
 
 		private:
 
