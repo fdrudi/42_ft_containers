@@ -122,17 +122,17 @@ namespace ft
 
 // * MEMBER FUNCTION *//
 
-// Iterators
+// Iteratori
 
 		iterator				begin()			{ return (iterator(_begin)); };
 		const_iterator			begin() const	{ return (const_iterator(_begin)); };
 		iterator				end()			{ return (iterator(_begin + _size)) };
 		const_iterator			end() const		{ return (const_iterator(_begin + _size)) };
-		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) };
-		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) };
-		reverse_iterator		rend()			{ return (reverse_iterator(begin())) };
-		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) };
-
+		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) };			// essendo reverse,
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) };		// ragiona al contrario.
+		reverse_iterator		rend()			{ return (reverse_iterator(begin())) };			// A mio parere
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) };	// totalmente inutile.
+																								//		.sisittu
 // Capacity
 
 		size_type		size() const { return (_size); };
@@ -153,6 +153,7 @@ namespace ft
 			pointer	tmp_begin;
 			size_type	prev_capacity;
 
+			/* gestione errori */
 			if (_capacity >= n)
 				return ;
 			if (n > max_size())
@@ -163,6 +164,7 @@ namespace ft
 			prev_end = _end;
 			prev_capacity = _capacity;
 
+			/* allocazione ed eventuale cambio indirizzo di memoria*/
 			_begin = _alloc.allocate(n, 0);
 			_capacity = n;
 			_end = _begin;
@@ -179,9 +181,12 @@ namespace ft
 
 // Element access
 
-		/* NB: per gli operator[], la documentazione parla di "undefined behaviour" nel caso di utilizzo improprio del parametro n. */
-		reference		operator[] (size_type n) { return (*(_begin + n))};
-		const_reference	operator[] (size_type n) const { return (*(_begin + n))};
+		/*
+			NB: per gli operator[], la documentazione parla di "undefined behaviour"
+			nel caso di utilizzo improprio del parametro n.
+		*/
+		reference		operator[] (size_type n)		{ return (*(_begin + n))};
+		const_reference	operator[] (size_type n) const	{ return (*(_begin + n))};
 
 		reference		at(size_type n)
 		{
@@ -197,12 +202,26 @@ namespace ft
 			return (*(_begin + n));
 		};
 
-		reference			front() { return (*_begin); };
-		const_reference		front() const { return (*_begin); };
-		reference			back() { return (*(_begin + _size)); };
-		const_reference		back() const { return (*(_begin + _size)); };
-		value_type*			data() { return (_begin); };
-		const value_type*	data() const { return (_begin); };
+		reference			front()			{ return (*_begin); };
+		const_reference		front() const	{ return (*_begin); };
+		reference			back()			{ return (*(_begin + _size)); };
+		const_reference		back() const	{ return (*(_begin + _size)); };
+		value_type*			data()			{ return (_begin); };	// ritorna il vettore
+		const value_type*	data() const	{ return (_begin); };	// sotto forma di array puntatore
+
+		/*
+			Ciao ragazzuoli,
+
+			Il vettore è praticamente pronto. Mancano però i modifiers che sono palesemente una rogna,
+			e visto che sono davvero di buon cuore nono vi ho voluto togliere il divertimento per questi due giorni.
+			D'altronde adesso sono le 00:57, domani è San Valentino e se non mi sveglio ad un orario decente
+			verrò linciato dalla signora.
+			Nel dubbio, usate questo messaggio come mio testamento: sappiate che vi ho voluto bene,
+			che i miei beni vanno devoluti per il pagamento dei miei debiti e ciò che avanza servirà per pagare
+			le pratiche burocratiche per seppellirmi in terra straniera extracomunitaria.
+
+			XOXO, il vostro buon vecchio sisittu.
+		*/
 
 		private:
 
