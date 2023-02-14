@@ -32,6 +32,7 @@
 		"locale": "cpp",
 		"optional": "cpp",
 		"type_traits": "cpp",
-		"typeinfo": "cpp"
+		"typeinfo": "cpp",
+		"*.tcc": "cpp"
 	}
 }

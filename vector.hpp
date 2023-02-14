@@ -132,19 +132,18 @@ namespace ft
 		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) };		// ragiona al contrario.
 		reverse_iterator		rend()			{ return (reverse_iterator(begin())) };			// A mio parere
 		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) };	// totalmente inutile.
-																								//		.sisittu
+																								//		Cit. sisittu
 // Capacity
 
 		size_type		size() const { return (_size); };
 		size_type		max_size() const { return (allocator_type().max_size()); }; // ritorna la massima capacità ipotetica che si può dare come argomento a reserve().
-
 		void 			resize (size_type n, value_type val = value_type())
 		{
-			size_type	new_capacity; // Sor Lazzaris Do your own things!!!!
+			size_type	new_cap
 		};
 
 		size_type		capacity() const { return (_capacity); };
-		bool			empty() const { return (_size == 0); };
+		bool			empty() const { return (_size == 0 ? true : false); };
 
 		void reserve(size_type n) // riserva spazio allocato per n elementi
 		{
@@ -178,6 +177,7 @@ namespace ft
 			if (tmp_begin && tmp_begin != _begin) // elimina lo spazio predefinito e non più utilizzato
 				_alloc.deallocate(tmp_begin, prev_capacity);
 		};
+		
 
 // Element access
 
