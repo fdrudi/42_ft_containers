@@ -28,7 +28,6 @@ namespace ft
 		_alloc(alloc),
 		_size(0),
 		_capacity(0),
-		_last(NULL),
 		_begin(NULL),
 		_end(NULL)
 		{};
@@ -38,7 +37,6 @@ namespace ft
 		_alloc(alloc),
 		_size(0),
 		_capacity(0),
-		_last(NULL),
 		_begin(NULL),
 		_end(NULL)
 		{
@@ -50,8 +48,6 @@ namespace ft
 				_end = _begin;
 				while (n--)
 					_alloc.construct(_end++, val);
-				_last = _end;
-				_last--;
 			}
 			else
 				throw std::length_error("vector");
@@ -76,8 +72,6 @@ namespace ft
 				_end++;
 				first++;
 			}
-			_last = _end;
-			_last--;
 		};
 
 // Copy Constructor
@@ -91,7 +85,6 @@ namespace ft
 			if (!other.empty())
 				assign(other.begin(), other.end()); // DA IMPLEMENTARE
 			_end = _begin + _size;
-			_last = _end - 1;
 		};
 
 // Copy Assign operator
@@ -108,7 +101,6 @@ namespace ft
 				_end = _begin;
 			}
 			this->insert(this->end(), other.begin(), other.end()); // DA IMPLEMENTARE
-			_last = _end - 1;
 			return (*this);
 		};
 
@@ -173,11 +165,10 @@ namespace ft
 				_alloc.construct(_end++, *prev_begin); // inserisce nel punto _end il contenuto del punto prev_begin
 				prev_begin++;
 			}
-			_last = _begin + n;
 			if (tmp_begin && tmp_begin != _begin) // elimina lo spazio predefinito e non più utilizzato
 				_alloc.deallocate(tmp_begin, prev_capacity);
 		};
-		
+
 
 // Element access
 
@@ -230,9 +221,5 @@ namespace ft
 		size_type		_capacity; //dimensione massima che il vettore può raggiungere prima che sia necessario allocare più memoria
 		pointer			_begin; //puntatore all'inizio del vettore
 		pointer			_end; //puntatore alla fine del vettore
-		pointer			_last; /* puntatore all'ultimo elemento allocato del vettore. Utile per sapere se è necessario allocare più memoria
-							     quando si inseriscono nuovi elementi nel vettore. In questo modo, puoi verificare se c'è spazio sufficiente
-							     per inserire nuovi elementi prima di allocare più memoria */
-
 	};
 }
