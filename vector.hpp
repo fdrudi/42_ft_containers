@@ -221,11 +221,62 @@ namespace ft
 
 		void assign (size_type n, const value_type& val);
 		void push_back (const value_type& val);
-		iterator insert (iterator position, const value_type& val);
-		void insert (iterator position, size_type n, const value_type& val);
+
+		iterator insert (iterator position, const value_type& val)
+		{
+			size_type	dist = position - this->begin();
+			if (_size == _capacity)
+			{
+				if (_capacity == 0)
+					this->reserve(1);
+				else
+					this->reserve(_capacity * 2);
+				position = this->begin() + dist;
+			}
+			_end++;
+			dist = _end - position + 1;
+			size_type i = _size + 1;
+			while (dist--)
+			{
+				_alloc.construct(_begin + i, _begin[i - 1]);
+				i--;
+			}
+			_alloc.construct(position, val);
+			_size++;
+			return (position);
+		};
+
+		void insert (iterator position, size_type n, const value_type& val)
+		{
+			size_type	dist = position - this->begin();
+			if (_size + n > _capacity)
+			{
+				if (_capacity == 0)
+					this->reserve(n);
+				else
+				{
+					while (size + n > _capacity)
+						this->reserve(_capacity * 2);
+				}
+				position = this->begin() + dist;
+			}
+			_end += n;
+			dist = _end - position + 1;
+			size_type i = _size + n;
+			while (dist--)
+			{
+				_alloc.construct(_begin + i, _begin[i - 1]);
+				i--;
+			}
+			for (int j = 0; j < n; j++)
+				_alloc.construct(position + j, val);
+			_size += n;
+			return (position);
+		};
 
 		template <class InputIterator>
-		void insert (iterator position, InputIterator first, InputIterator last);
+		void insert (iterator position, InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0);
 		iterator erase (iterator position);
 		iterator erase (iterator first, iterator last);
 		void swap (vector& x);

@@ -228,9 +228,9 @@ namespace ft
 					this->reserve(1);
 				else
 					this->reserve(this->size() * 2);
+				position = this->begin() + dist;
 			}
 			_end++;
-			position = this->begin() + dist;
 			size_type	idx = _size + 1;
 			size_type	idx2 = _size;
 			dist = this->end() - position + 1;
