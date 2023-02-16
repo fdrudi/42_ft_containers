@@ -214,6 +214,28 @@ namespace ft
 			XOXO, il vostro buon vecchio sisittu.
 		*/
 
+// Modifiers
+
+		template <class InputIterator>
+		void assign (InputIterator first, InputIterator last);
+
+		void assign (size_type n, const value_type& val);
+		void push_back (const value_type& val);
+		iterator insert (iterator position, const value_type& val);
+		void insert (iterator position, size_type n, const value_type& val);
+
+		template <class InputIterator>
+		void insert (iterator position, InputIterator first, InputIterator last);
+		iterator erase (iterator position);
+		iterator erase (iterator first, iterator last);
+		void swap (vector& x);
+		void clear();
+		template <class... Args>
+		iterator emplace (const_iterator position, Args&&... args);
+		template <class... Args>
+		void emplace_back (Args&&... args);
+
+
 		private:
 
 		allocator_type	_alloc; //istanza dell'allocatore utilizzato per gestire la memoria utilizzata dal vettore
