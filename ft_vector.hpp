@@ -307,7 +307,7 @@ namespace ft
 				_size = first - _begin;
 				_end = _begin + _size;
 				size_type	dist = ft::distance(first, last);
-				size_type	idx = _size;
+				size_type	idx = last - _begin;
 				while (dist--)
 				{
 					_alloc.destroy(_begin + idx);

@@ -21,9 +21,9 @@ namespace ft
 		typedef	ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef	ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 
-// * COSTRUTTORI * //
+		// * COSTRUTTORI * //
 
-// Costruttore con tipo di Allocator
+		// Costruttore con tipo di Allocator
 		explicit vector(const allocator_type& alloc = allocator_type()):
 		_alloc(alloc),
 		_size(0),
@@ -32,7 +32,7 @@ namespace ft
 		_end(NULL)
 		{};
 
-// Costruttore con 'count' copie dell'elemento 'val'
+		// Costruttore con 'count' copie dell'elemento 'val'
 		explicit vector(size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()):
 		_alloc(alloc),
 		_size(0),
@@ -53,7 +53,7 @@ namespace ft
 				throw std::length_error("vector");
 		};
 
-// Costruttore con range da 'first' a 'last'
+		// Costruttore con range da 'first' a 'last'
 		template< class InputIt >																		// Controllo eseguito al run-time se il type è integral
 		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = 0 ):
 		_alloc(alloc),
@@ -74,7 +74,7 @@ namespace ft
 			}
 		};
 
-// Copy Constructor
+		// Copy Constructor
 		vector( const vector& other ):
 		_alloc(other._alloc),
 		_size(other._size),
@@ -83,28 +83,28 @@ namespace ft
 		{
 
 			if (!other.empty())
-				assign(other.begin(), other.end()); // DA IMPLEMENTARE
+				assign(other.begin(), other.end());
 			_end = _begin + _size;
 		};
 
-// Copy Assign operator
+		// Copy Assign operator
 		vector&	operator=(const vector &other)
 		{
 			if (other == *this)
 				return (*this);
-			this->clear(); // DA IMPLEMENTARE (destroy chiama il distruttore dell'oggetto all'interno del vettore)
+			this->clear();
 			if (this->capacity())
 			{
-				_alloc.deallocate(_begin, _capacity); // (deallocate libera la memoria allocata)
+				_alloc.deallocate(_begin, _capacity);
 				_begin = _alloc.allocate(other.capacity());
 				_capacity = other.capacity();
 				_end = _begin;
 			}
-			this->insert(this->end(), other.begin(), other.end()); // DA IMPLEMENTARE
+			this->insert(this->end(), other.begin(), other.end());
 			return (*this);
 		};
 
-// Distruttore
+		// Distruttore
 		~vector()
 		{
 			this->clear();
@@ -112,32 +112,70 @@ namespace ft
 				_alloc.deallocate(_begin, _capacity);
 		}
 
-// * MEMBER FUNCTION *//
+		// * MEMBER FUNCTION *//
 
-// Iteratori
+		// ITERATORI
 
-		iterator				begin()			{ return (iterator(_begin)); };
-		const_iterator			begin() const	{ return (const_iterator(_begin)); };
-		iterator				end()			{ return (iterator(_begin + _size)) };
-		const_iterator			end() const		{ return (const_iterator(_begin + _size)) };
-		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) };			// essendo reverse,
-		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) };		// ragiona al contrario.
-		reverse_iterator		rend()			{ return (reverse_iterator(begin())) };			// A mio parere
-		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) };	// totalmente inutile.
-																								//		Cit. sisittu
-// Capacity
+		iterator				begin()			{ return (iterator(_begin)); }; // Getter Iteratore che punta all'inizio
+		const_iterator			begin() const	{ return (const_iterator(_begin)); }; // Getter Iteratore Const che punta all'inizio
+		iterator				end()			{ return (iterator(_begin + _size)) }; // Getter Iteratore che punta alla fine
+		const_iterator			end() const		{ return (const_iterator(_begin + _size)) }; // Getter Iteratore Const che punta alla fine
+		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) }; // Getter Iteratore Reverse che punta all'inizio
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) }; // Getter Iteratore Reverse Const che punta all'inizio
+		reverse_iterator		rend()			{ return (reverse_iterator(begin())) }; // Getter Iteratore Reverse che punta alla fine
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) }; // Getter Iteratore Reverse Const che punta alla fine
+
+		// CAPACITY
 
 		size_type		size() const { return (_size); };
 		size_type		max_size() const { return (allocator_type().max_size()); }; // ritorna la massima capacità ipotetica che si può dare come argomento a reserve().
-		void 			resize (size_type n, value_type val = value_type())
+
+		/*
+			ridefinisce la size del container prendendo da argomento il nuovo numero (n) di elementi;
+			se n è maggiore del precedente, inserirà in ultima posizione dei nuovi elementi fino ad arrivare a n
+			se n è minore, rimuoverà dall'ultimo fino al necessario per arrivare ad n
+		*/
+		void 			resize(size_type n, value_type val = value_type())
 		{
-			size_type	new_cap
+			size_type	new_cap = this->capacity();
+
+			if (n > this->max_size())
+				throw std::length_error("vector::resize");
+			if (n > this->capacity())
+			{
+				while (n > new_cap)
+					new_cap *= 2;
+				this->reserve(new_cap);
+				this->insert(this->end(), n - this->size(), val);
+			}
+			else if (n > this->size())
+				this->insert(this->end(), n - this->size(), val);
+			else if (n == this->size())
+				return ;
+			else
+			{
+				for (size_type i = _size - n; i > 0; i--)
+				{
+					_alloc.destroy(_end--);
+					_size--;
+				}
+			}
+		}
+
+		// Getter Capacity
+		size_type		capacity() const
+		{
+			return (_capacity);
 		};
 
-		size_type		capacity() const { return (_capacity); };
-		bool			empty() const { return (_size == 0 ? true : false); };
+		// Controlla se la 'size' è vuota
+		bool			empty() const
+		{
+			return (_size == 0 ? true : false);
+		};
 
-		void reserve(size_type n) // riserva spazio allocato per n elementi
+		// Riserva spazio allocato per n elementi
+		void reserve(size_type n)
 		{
 			pointer	prev_begin;
 			pointer prev_end;
@@ -170,7 +208,7 @@ namespace ft
 		};
 
 
-// Element access
+		// ELEMENT ACCESS
 
 		/*
 			NB: per gli operator[], la documentazione parla di "undefined behaviour"
@@ -200,28 +238,42 @@ namespace ft
 		value_type*			data()			{ return (_begin); };	// ritorna il vettore
 		const value_type*	data() const	{ return (_begin); };	// sotto forma di array puntatore
 
-		/*
-			Ciao ragazzuoli,
-
-			Il vettore è praticamente pronto. Mancano però i modifiers che sono palesemente una rogna,
-			e visto che sono davvero di buon cuore nono vi ho voluto togliere il divertimento per questi due giorni.
-			D'altronde adesso sono le 00:57, domani è San Valentino e se non mi sveglio ad un orario decente
-			verrò linciato dalla signora.
-			Nel dubbio, usate questo messaggio come mio testamento: sappiate che vi ho voluto bene,
-			che i miei beni vanno devoluti per il pagamento dei miei debiti e ciò che avanza servirà per pagare
-			le pratiche burocratiche per seppellirmi in terra straniera extracomunitaria.
-
-			XOXO, il vostro buon vecchio sisittu.
-		*/
-
-// Modifiers
+		// MODIFIERS
 
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last);
+		void assign (InputIterator first, InputIterator last)
+		{
 
-		void assign (size_type n, const value_type& val);
-		void push_back (const value_type& val);
+		}
 
+		/* assegna il valore val per un numero (n) di elementi */
+		void assign (size_type n, const value_type& val)
+		{
+			this->clear();
+			if(n > this->capacity())
+				this->reserve(n);
+			this->insert(this->begin, n, val);
+		}
+
+		// inserisce un elemento in ultima posizione
+		void push_back (const value_type& val)
+		{
+			if (_size == _capacity && _capacity + 1 > this->max_size())
+				throw std::length_error("ft::vector::push_back");
+
+			if (_size == _capacity)
+			{
+				if (_capacity == 0)
+					this->reserve(1);
+				else
+					this->reserve(_capacity * 2);
+			}
+			_alloc.construct(_end++, val);
+			_size++;
+			return ;
+		};
+
+		/* inserisce un valore nel punto position */
 		iterator insert (iterator position, const value_type& val)
 		{
 			size_type	dist = position - this->begin();
@@ -236,7 +288,7 @@ namespace ft
 			_end++;
 			dist = _end - position + 1;
 			size_type i = _size + 1;
-			while (dist--)
+			while (dist--) // spostamento dei dati precedentemente inseriti
 			{
 				_alloc.construct(_begin + i, _begin[i - 1]);
 				i--;
@@ -246,6 +298,7 @@ namespace ft
 			return (position);
 		};
 
+		/* inserisce n valori uguali consecutivi a partire da position */
 		void insert (iterator position, size_type n, const value_type& val)
 		{
 			size_type	dist = position - this->begin();
@@ -263,7 +316,7 @@ namespace ft
 			_end += n;
 			dist = _end - position + 1;
 			size_type i = _size + n;
-			while (dist--)
+			while (dist--) // spostamento dei dati precedentemente inseriti
 			{
 				_alloc.construct(_begin + i, _begin[i - 1]);
 				i--;
@@ -274,18 +327,126 @@ namespace ft
 			return (position);
 		};
 
+		/*
+			dati due iteratori dello stesso tipo,
+			inserisce i valori trovati dal punto first al punto last
+			nel punto position appartenente al vettore.
+		*/
 		template <class InputIterator>
 		void insert (iterator position, InputIterator first, InputIterator last,
-						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0);
-		iterator erase (iterator position);
-		iterator erase (iterator first, iterator last);
-		void swap (vector& x);
-		void clear();
-		template <class... Args>
-		iterator emplace (const_iterator position, Args&&... args);
-		template <class... Args>
-		void emplace_back (Args&&... args);
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0)
+		{
+			// controllo sul tipo di variabile valido o meno
+			bool is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value;
+			if (!is_valid)
+				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
 
+			const size_type	n = ft::distance(first, last);
+			size_type		dist = position - this->begin();
+			size_type		finalSize = _size - n;
+
+			if (finalSize > _capacity)
+			{
+				if (_capacity == 0)
+					this->reserve(n);
+				else
+				{
+					while (finalSize > _capacity)
+						this->reserve(_capacity * 2);
+				}
+				position = this->begin() + dist;
+				_end = _begin + _size;
+			}
+			dist = ft::distance(position, this->end());
+			_end = _begin + finalSize;
+			size_type i = finalSize;
+			while (dist--) // spostamento dei dati precedentemente inseriti
+			{
+				_alloc.construct(_begin + i, _begin[i - 1]);
+				i--;
+			}
+			for (int j = 0; j < n; j++)
+				_alloc.construct(position + j, first++);
+			_size = finalSize;
+			return ;
+		};
+
+		/* elimina il valore nel punto position, spostando tutti gli altri elementi */
+		iterator erase (iterator position)
+		{
+			size_type	i = position - this->begin();
+			while (i + 1 < this->size())
+			{
+				_begin[i] = _begin[i + 1];
+				i++;
+			}
+			_alloc.destroy(_end--);
+			_size--;
+			return (position);
+		};
+
+		/* elimina i valori dal punto first al punto last, spostando tutti gli altri elementi */
+		iterator erase (iterator first, iterator last)
+		{
+			if(_end == last)
+			{
+				_size = first - _begin;
+				_end = first;
+				size_type	dist = ft::distance(first, last);
+				size_type	i = last - _begin;
+				while(dist--)
+					_alloc.destroy(_begin + i--);
+				return (this->end());
+			}
+			iterator	ret = first;
+			_size -= ft::distance(first, last);
+			while (last != this->end())
+			{
+					_alloc.construct(first.pointed(), *last++);
+					first++;
+			}
+
+			// pulizia ultimi elementi non utilizzati
+			_end = _begin + _size;
+			while (first != last)
+				_alloc.destroy(first++);
+			return (ret);
+		}
+
+		// Scambia il contenuto e la lungezza del vettore con il vettore passato come parametro, utilizzando i puntatori
+		void swap (vector& x)
+		{
+			pointer					tmpBegin = x._begin;
+			pointer					tmpEnd = x._end;
+			size_type				tmpCapacity = x._capacity;
+			size_type				tmpSize = x._size;
+			allocator_type			tmpAlloc = x._alloc;
+
+			if (*this == x)
+				return ;
+
+			x._begin = this->_begin;
+			x._end = this->_end;
+			x._capacity = this->_capacity;
+			x._size = this->_size;
+			x._alloc = this->_alloc;
+			this->_begin = tmpBegin;
+			this->_end = tmpEnd;
+			this->_capacity = tmpCapacity;
+			this->_size = tmpSize;
+			this->_alloc = tmpAlloc;
+		}
+
+		// Chiama il distruttore di ogni oggetto all' interno del vettore
+		void clear()
+		{
+			while(_size)
+			{
+				_alloc.destroy(_end);
+				_size--;
+				_end--;
+			}
+		}
 
 		private:
 
