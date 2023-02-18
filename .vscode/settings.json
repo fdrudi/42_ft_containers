@@ -35,6 +35,19 @@
 		"typeinfo": "cpp",
 		"*.tcc": "cpp",
 		"numeric": "cpp",
-		"*.ipp": "cpp"
+		"*.ipp": "cpp",
+		"atomic": "cpp",
+		"bit": "cpp",
+		"random": "cpp",
+		"system_error": "cpp",
+		"cmath": "cpp",
+		"fstream": "cpp",
+		"iomanip": "cpp",
+		"istream": "cpp",
+		"limits": "cpp",
+		"ostream": "cpp",
+		"stdexcept": "cpp",
+		"streambuf": "cpp",
+		"utility": "cpp"
 	}
 }

@@ -40,23 +40,23 @@ namespace ft
 		_begin(NULL),
 		_end(NULL)
 		{
-			if (n >= 0 && n < this->max_size())
+			if (count >= 0 && count < this->max_size())
 			{
-				_size = n;
-				_capacity = n;
+				_size = count;
+				_capacity = count;
 				_begin = _alloc.allocate(_capacity);
 				_end = _begin;
-				while (n--)
-					_alloc.construct(_end++, val);
+				while (count--)
+					_alloc.construct(_end++, value);
 			}
 			else
 				throw std::length_error("vector");
 		};
 
 		// Costruttore con range da 'first' a 'last'
-		template< class InputIt >																		// Controllo eseguito al run-time se il type è integral
-		vector( InputIt first, InputIt last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = 0 ):
-		_alloc(alloc),
+		template< class InputIterator >																		// Controllo eseguito al run-time se il type è integral
+		vector( InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0 ):
+		_alloc(alloc)
 		{
 			bool is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value;
 			if (!is_valid)
@@ -76,12 +76,10 @@ namespace ft
 
 		// Copy Constructor
 		vector( const vector& other ):
-		_alloc(other._alloc),
-		_size(other._size),
-		_capacity(other._capacity),
-		_begin(other._alloc.allocate(other._capacity)),
+		_size(other.size()),
+		_capacity(other.capacity()),
+		_begin(_alloc.allocate(other.capacity()))
 		{
-
 			if (!other.empty())
 				assign(other.begin(), other.end());
 			_end = _begin + _size;
@@ -118,12 +116,12 @@ namespace ft
 
 		iterator				begin()			{ return (iterator(_begin)); }; // Getter Iteratore che punta all'inizio
 		const_iterator			begin() const	{ return (const_iterator(_begin)); }; // Getter Iteratore Const che punta all'inizio
-		iterator				end()			{ return (iterator(_begin + _size)) }; // Getter Iteratore che punta alla fine
-		const_iterator			end() const		{ return (const_iterator(_begin + _size)) }; // Getter Iteratore Const che punta alla fine
-		reverse_iterator		rbegin()		{ return (reverse_iterator(end())) }; // Getter Iteratore Reverse che punta all'inizio
-		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())) }; // Getter Iteratore Reverse Const che punta all'inizio
-		reverse_iterator		rend()			{ return (reverse_iterator(begin())) }; // Getter Iteratore Reverse che punta alla fine
-		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())) }; // Getter Iteratore Reverse Const che punta alla fine
+		iterator				end()			{ return (iterator(_begin + _size)); }; // Getter Iteratore che punta alla fine
+		const_iterator			end() const		{ return (const_iterator(_begin + _size)); }; // Getter Iteratore Const che punta alla fine
+		reverse_iterator		rbegin()		{ return (reverse_iterator(end())); }; // Getter Iteratore Reverse che punta all'inizio
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())); }; // Getter Iteratore Reverse Const che punta all'inizio
+		reverse_iterator		rend()			{ return (reverse_iterator(begin())); }; // Getter Iteratore Reverse che punta alla fine
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())); }; // Getter Iteratore Reverse Const che punta alla fine
 
 		// CAPACITY
 
@@ -214,8 +212,8 @@ namespace ft
 			NB: per gli operator[], la documentazione parla di "undefined behaviour"
 			nel caso di utilizzo improprio del parametro n.
 		*/
-		reference		operator[] (size_type n)		{ return (*(_begin + n))};
-		const_reference	operator[] (size_type n) const	{ return (*(_begin + n))};
+		reference		operator[] (size_type n)		{ return (*(_begin + n)); };
+		const_reference	operator[] (size_type n) const	{ return (*(_begin + n)); };
 
 		reference		at(size_type n)
 		{
@@ -247,7 +245,7 @@ namespace ft
 		{
 			bool	is_valid;
 
-			is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::val;
+			is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value;
 			if (!is_valid)
 				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
 			size_type n = ft::distance(first, last);
@@ -319,13 +317,13 @@ namespace ft
 					this->reserve(n);
 				else
 				{
-					while (size + n > _capacity)
+					while (_size + n > _capacity)
 						this->reserve(_capacity * 2);
 				}
 				position = this->begin() + dist;
 			}
 			_end += n;
-			dist = _end - position + 1;
+			dist = this->end() - position + 1;
 			size_type i = _size + n;
 			while (dist--) // spostamento dei dati precedentemente inseriti
 			{
@@ -352,34 +350,66 @@ namespace ft
 			if (!is_valid)
 				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
 
-			const size_type	n = ft::distance(first, last);
-			size_type		dist = position - this->begin();
-			size_type		finalSize = _size - n;
 
-			if (finalSize > _capacity)
+			size_type	positionDist = position - this->begin();
+			size_type	finalSize = this->size() + ft::distance(first, last);
+			size_type	new_cap = this->capacity();
+			if (finalSize > this->capacity())
 			{
-				if (_capacity == 0)
-					this->reserve(n);
-				else
-				{
-					while (finalSize > _capacity)
-						this->reserve(_capacity * 2);
-				}
-				position = this->begin() + dist;
-				_end = _begin + _size;
+				if (!this->capacity())
+					new_cap = 1;
+				while (finalSize > new_cap)
+					new_cap *= 2;
+				this->reserve(new_cap);
 			}
-			dist = ft::distance(position, this->end());
+			position = this->begin() + positionDist;
+			_end = _begin + _size;
+			size_type	toMove = ft::distance(position, this->end());
 			_end = _begin + finalSize;
-			size_type i = finalSize;
-			while (dist--) // spostamento dei dati precedentemente inseriti
-			{
-				_alloc.construct(_begin + i, _begin[i - 1]);
-				i--;
-			}
-			for (int j = 0; j < n; j++)
-				_alloc.construct(position + j, first++);
 			_size = finalSize;
-			return ;
+			size_type	dist = ft::distance(first, last);
+			try
+			{
+				int i = 1;
+				while (toMove--)
+					_begin[_size - i++] = _begin[positionDist + toMove];
+				while (dist--)
+					_begin[positionDist++] = *first++;
+			}
+			catch (...)
+			{
+				_size = 0;
+				_capacity = 0;
+				throw "hey";
+			}
+			// const size_type	n = ft::distance(first, last);
+			// size_type		dist = position - this->begin();
+			// size_type		finalSize = _size - n;
+
+			// if (finalSize > _capacity)
+			// {
+			// 	if (_capacity == 0)
+			// 		this->reserve(n);
+			// 	else
+			// 	{
+			// 		while (finalSize > _capacity)
+			// 			this->reserve(_capacity * 2);
+			// 	}
+			// 	position = this->begin() + dist;
+			// 	_end = _begin + _size;
+			// }
+			// dist = ft::distance(position, this->end());
+			// _end = _begin + finalSize;
+			// size_type i = finalSize;
+			// while (dist--) // spostamento dei dati precedentemente inseriti
+			// {
+			// 	this->_alloc.construct(_begin + i, _begin[i - 1]);
+			// 	i--;
+			// }
+			// for (int j = 0; j < n; j++)
+			// 	_alloc.construct(position + j, first++);
+			// _size = finalSize;
+			// return ;
 		};
 
 		/* elimina il valore nel punto position, spostando tutti gli altri elementi */
