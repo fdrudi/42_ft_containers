@@ -239,11 +239,13 @@ namespace ft
 		const value_type*	data() const	{ return (_begin); };	// sotto forma di array puntatore
 
 		// MODIFIERS
-
+		/* assegna nuovi valori elemento per elemento in sequenza, nell'intervallo [first, last) */
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last)
+		void assign (InputIterator first, InputIterator last), 
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0)
 		{
-
+			bool	is_valid;
+			is_valid = 
 		}
 
 		/* assegna il valore val per un numero (n) di elementi */
@@ -253,7 +255,7 @@ namespace ft
 			if(n > this->capacity())
 				this->reserve(n);
 			this->insert(this->begin, n, val);
-		}
+		};
 
 		// inserisce un elemento in ultima posizione
 		void push_back (const value_type& val)
@@ -274,7 +276,7 @@ namespace ft
 		};
 
 		/* inserisce un valore nel punto position */
-		iterator insert (iterator position, const value_type& val)
+		iterator insert (iterator position, const value_type& val) //Controllo dei valori con "enable_if"?
 		{
 			size_type	dist = position - this->begin();
 			if (_size == _capacity)
@@ -299,7 +301,7 @@ namespace ft
 		};
 
 		/* inserisce n valori uguali consecutivi a partire da position */
-		void insert (iterator position, size_type n, const value_type& val)
+		void insert (iterator position, size_type n, const value_type& val) //Controllo dei valori con "enable_if"?
 		{
 			size_type	dist = position - this->begin();
 			if (_size + n > _capacity)
