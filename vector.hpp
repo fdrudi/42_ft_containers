@@ -239,13 +239,22 @@ namespace ft
 		const value_type*	data() const	{ return (_begin); };	// sotto forma di array puntatore
 
 		// MODIFIERS
+
 		/* assegna nuovi valori elemento per elemento in sequenza, nell'intervallo [first, last) */
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last), 
+		void assign (InputIterator first, InputIterator last,
 				typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type * = 0)
 		{
 			bool	is_valid;
-			is_valid = 
+
+			is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::val;
+			if (!is_valid)
+				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
+			size_type n = ft::distance(first, last);
+			this->clear();
+			if(n > this->capacity())
+				this->reserve(n);
+			this->insert(this->begin(), first, last);
 		}
 
 		/* assegna il valore val per un numero (n) di elementi */
@@ -254,7 +263,7 @@ namespace ft
 			this->clear();
 			if(n > this->capacity())
 				this->reserve(n);
-			this->insert(this->begin, n, val);
+			this->insert(this->begin(), n, val);
 		};
 
 		// inserisce un elemento in ultima posizione
@@ -276,7 +285,7 @@ namespace ft
 		};
 
 		/* inserisce un valore nel punto position */
-		iterator insert (iterator position, const value_type& val) //Controllo dei valori con "enable_if"?
+		iterator insert (iterator position, const value_type& val)
 		{
 			size_type	dist = position - this->begin();
 			if (_size == _capacity)
@@ -301,7 +310,7 @@ namespace ft
 		};
 
 		/* inserisce n valori uguali consecutivi a partire da position */
-		void insert (iterator position, size_type n, const value_type& val) //Controllo dei valori con "enable_if"?
+		void insert (iterator position, size_type n, const value_type& val)
 		{
 			size_type	dist = position - this->begin();
 			if (_size + n > _capacity)
@@ -390,10 +399,10 @@ namespace ft
 		/* elimina i valori dal punto first al punto last, spostando tutti gli altri elementi */
 		iterator erase (iterator first, iterator last)
 		{
+			_size -= ft::distance(first, last);
 			if(_end == last)
 			{
-				_size = first - _begin;
-				_end = first;
+				_end = _begin + _size;
 				size_type	dist = ft::distance(first, last);
 				size_type	i = last - _begin;
 				while(dist--)
@@ -401,7 +410,6 @@ namespace ft
 				return (this->end());
 			}
 			iterator	ret = first;
-			_size -= ft::distance(first, last);
 			while (last != this->end())
 			{
 					_alloc.construct(first.pointed(), *last++);
@@ -450,6 +458,9 @@ namespace ft
 			}
 		}
 
+		allocator_type	get_allocator() const { return (_alloc); };
+
+
 		private:
 
 		allocator_type	_alloc; //istanza dell'allocatore utilizzato per gestire la memoria utilizzata dal vettore
@@ -458,4 +469,62 @@ namespace ft
 		pointer			_begin; //puntatore all'inizio del vettore
 		pointer			_end; //puntatore alla fine del vettore
 	};
+
+	// * OVERLOADS * //
+
+	template <class T, class Alloc>
+	bool operator==(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return (false);
+
+		typename vector<T>::const_iterator	i = lhs.begin();
+		typename vector<T>::const_iterator	i2 = rhs.begin();
+		while (i != lhs.end())
+		{
+			if (i2 == rhs.end() || *i != *i2)
+				return (false);
+			i++;
+			i2++;
+		}
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator!=(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		return (!(lhs == rhs));
+	}
+
+	template <class T, class Alloc>
+	bool operator<(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
+
+	template <class T, class Alloc>
+	bool operator<=(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		return (!(lhs > rhs));
+	}
+
+	template <class T, class Alloc>
+	bool operator>(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		return (!(lhs == rhs || lhs < rhs));
+	}
+
+	template <class T, class Alloc>
+	bool operator>=(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
+	{
+		return (!(lhs < rhs));
+	}
+}
+namespace std
+{
+	template <class T, class Alloc>
+	void	swap(ft::vector<T, Alloc>& x, ft::vector<T, Alloc>& y)
+	{
+		x.swap(y);
+	}
 }

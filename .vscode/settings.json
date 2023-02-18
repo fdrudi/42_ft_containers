@@ -33,6 +33,8 @@
 		"optional": "cpp",
 		"type_traits": "cpp",
 		"typeinfo": "cpp",
-		"*.tcc": "cpp"
+		"*.tcc": "cpp",
+		"numeric": "cpp",
+		"*.ipp": "cpp"
 	}
 }

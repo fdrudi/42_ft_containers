@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utility.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ddelladi <ddelladi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fdrudi <fdrudi@student.42roma.it>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 20:03:04 by ddelladi          #+#    #+#             */
-/*   Updated: 2022/12/05 16:58:09 by ddelladi         ###   ########.fr       */
+/*   Updated: 2023/02/18 13:30:05 by fdrudi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ namespace ft
 	struct bidirectional_iterator_tag : public forward_iterator_tag {};
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 	struct contiguous_iterator_tag : public random_access_iterator_tag {};
-	
+
 	template <bool is_valid, typename T>
 	struct valid_iterator_tag_res
 	{
@@ -100,7 +100,7 @@ namespace ft
 
 	template <>
 	struct is_input_iterator_tagged<forward_iterator_tag> : public valid_iterator_tag_res<true, forward_iterator_tag> {};
-	
+
 	template <>
 	struct is_input_iterator_tagged<input_iterator_tag> : public valid_iterator_tag_res<true, input_iterator_tag> {};
 
@@ -164,7 +164,7 @@ namespace ft
 	{
 		while (first1 != last1)
 		{
-			if (first2 == last2 || *first2 < *first1) return false;
+			if (first2 == last2 || *first1 > *first2) return false;
 			else if (*first1 < *first2) return true;
 			first1++;
 			first2++;
@@ -222,7 +222,7 @@ namespace ft
 	bool	operator==(pair<T1, T2> const & lhs, pair<T1, T2> const & rhs)
 	{
 		if (lhs.first == rhs.first && lhs.second == rhs.second) return (true);
-		return (false); 
+		return (false);
 	};
 
 	template <class T1, class T2>
@@ -235,28 +235,28 @@ namespace ft
 	bool	operator<(pair<T1, T2> const & lhs, pair<T1, T2> const & rhs)
 	{
 		if (lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second)) return (true);
-		return (false); 
+		return (false);
 	};
 
 	template <class T1, class T2>
 	bool	operator<=(pair<T1, T2> const & lhs, pair<T1, T2> const & rhs)
 	{
 		if (lhs.first <= rhs.first || (lhs.first == rhs.first && lhs.second <= rhs.second)) return (true);
-		return (false); 
+		return (false);
 	};
 
 	template <class T1, class T2>
 	bool	operator>(pair<T1, T2> const & lhs, pair<T1, T2> const & rhs)
 	{
 		if (lhs.first > rhs.first || (lhs.first == rhs.first && lhs.second > rhs.second)) return (true);
-		return (false); 
+		return (false);
 	};
 
 	template <class T1, class T2>
 	bool	operator>=(pair<T1, T2> const & lhs, pair<T1, T2> const & rhs)
 	{
 		if (lhs.first >= rhs.first || (lhs.first == rhs.first && lhs.second >= rhs.second)) return (true);
-		return (false); 
+		return (false);
 	};
 
 	template <class T1, class T2>

@@ -1,0 +1,9 @@
+In file included from ../vector_tests/operator[].cpp:2:
+../vector_tests/__service.ipp:3:10: fatal error: '../vector.hpp' file not found
+#include VECTOR
+         ^~~~~~
+../vector_tests/../system/../../config.hpp:8:18: note: expanded from macro 'VECTOR'
+#define VECTOR                  "../vector.hpp"
+                                ^~~~~~~~~~~~~~~
+1 error generated.
+rror generated.
