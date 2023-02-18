@@ -114,14 +114,14 @@ namespace ft
 
 		// ITERATORI
 
-		iterator				begin()			{ return (iterator(_begin)); }; // Getter Iteratore che punta all'inizio
-		const_iterator			begin() const	{ return (const_iterator(_begin)); }; // Getter Iteratore Const che punta all'inizio
-		iterator				end()			{ return (iterator(_begin + _size)); }; // Getter Iteratore che punta alla fine
-		const_iterator			end() const		{ return (const_iterator(_begin + _size)); }; // Getter Iteratore Const che punta alla fine
-		reverse_iterator		rbegin()		{ return (reverse_iterator(end())); }; // Getter Iteratore Reverse che punta all'inizio
-		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())); }; // Getter Iteratore Reverse Const che punta all'inizio
-		reverse_iterator		rend()			{ return (reverse_iterator(begin())); }; // Getter Iteratore Reverse che punta alla fine
-		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())); }; // Getter Iteratore Reverse Const che punta alla fine
+		iterator				begin()			{ return (_begin); }; // Getter Iteratore che punta all'inizio
+		const_iterator			begin() const	{ return (_begin); }; // Getter Iteratore Const che punta all'inizio
+		iterator				end()			{ return (_end); }; // Getter Iteratore che punta alla fine
+		const_iterator			end() const		{ return (_end); }; // Getter Iteratore Const che punta alla fine
+		reverse_iterator		rbegin()		{ return (reverse_iterator(this->end())); }; // Getter Iteratore Reverse che punta all'inizio
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(this->end())); }; // Getter Iteratore Reverse Const che punta all'inizio
+		reverse_iterator		rend()			{ return (reverse_iterator(this->begin())); }; // Getter Iteratore Reverse che punta alla fine
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(this->begin())); }; // Getter Iteratore Reverse Const che punta alla fine
 
 		// CAPACITY
 
@@ -192,7 +192,7 @@ namespace ft
 			prev_capacity = _capacity;
 
 			/* allocazione ed eventuale cambio indirizzo di memoria*/
-			_begin = _alloc.allocate(n, 0);
+			_begin = _alloc.allocate(n);
 			_capacity = n;
 			_end = _begin;
 
@@ -282,6 +282,13 @@ namespace ft
 			return ;
 		};
 
+		void pop_back(void)
+		{
+			_end--;
+			_alloc.destroy(_end);
+			_size--;
+		}
+
 		/* inserisce un valore nel punto position */
 		iterator insert (iterator position, const value_type& val)
 		{
@@ -295,14 +302,14 @@ namespace ft
 				position = this->begin() + dist;
 			}
 			_end++;
-			dist = _end - position + 1;
+			dist = _end - position.pointed() + 1;
 			size_type i = _size + 1;
 			while (dist--) // spostamento dei dati precedentemente inseriti
 			{
 				_alloc.construct(_begin + i, _begin[i - 1]);
 				i--;
 			}
-			_alloc.construct(position, val);
+			_alloc.construct(position.pointed(), val);
 			_size++;
 			return (position);
 		};
@@ -312,18 +319,10 @@ namespace ft
 		{
 			size_type	dist = position - this->begin();
 			if (_size + n > _capacity)
-			{
-				if (_capacity == 0)
-					this->reserve(n);
-				else
-				{
-					while (_size + n > _capacity)
-						this->reserve(_capacity * 2);
-				}
-				position = this->begin() + dist;
-			}
+				this->reserve(_size + n);
+			position = this->begin() + dist;
 			_end += n;
-			dist = this->end() - position + 1;
+			dist = this->end() - position.pointed() + 1;
 			size_type i = _size + n;
 			while (dist--) // spostamento dei dati precedentemente inseriti
 			{
@@ -331,9 +330,8 @@ namespace ft
 				i--;
 			}
 			for (int j = 0; j < n; j++)
-				_alloc.construct(position + j, val);
+				_alloc.construct(position.pointed() + j, val);
 			_size += n;
-			return (position);
 		};
 
 		/*
@@ -429,9 +427,9 @@ namespace ft
 		/* elimina i valori dal punto first al punto last, spostando tutti gli altri elementi */
 		iterator erase (iterator first, iterator last)
 		{
-			_size -= ft::distance(first, last);
-			if(_end == last)
+			if(last == this->end())
 			{
+				_size = first - _begin;
 				_end = _begin + _size;
 				size_type	dist = ft::distance(first, last);
 				size_type	i = last - _begin;
@@ -440,6 +438,7 @@ namespace ft
 				return (this->end());
 			}
 			iterator	ret = first;
+			_size -= ft::distance(first, last);
 			while (last != this->end())
 			{
 					_alloc.construct(first.pointed(), *last++);
@@ -449,7 +448,10 @@ namespace ft
 			// pulizia ultimi elementi non utilizzati
 			_end = _begin + _size;
 			while (first != last)
-				_alloc.destroy(first++);
+			{
+				_alloc.destroy(first.pointed());
+				first++;
+			}
 			return (ret);
 		}
 

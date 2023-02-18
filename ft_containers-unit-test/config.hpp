@@ -6,9 +6,9 @@
 /*		if you haven't yet some container		  */
 /**************************************************/
 #define VECTOR			"../../../vector.hpp"
-// #define STACK			"../stack.hpp"
-// #define MAP			  	"../map.hpp"
-// #define SET			  	"../set.hpp"
+// #define STACK			"../../../Stack.hpp"
+// #define MAP			  	"../../../Map.hpp"
+// #define SET			  	"../../../Set.hpp"
 #define UTILITIES		"../../../utility.hpp"
 
 /* comment this to turn OFF flags (-WWW, -std=98) */
@@ -18,9 +18,9 @@
 /*		Change template names of your classes	  */
 /**************************************************/
 #define	_vector 			ft::vector
-// #define	_stack	 			ft::stack
-// #define	_map 				ft::map
-// #define	_set	 			ft::set
+// #define	_stack	 			ft::Stack
+// #define	_map 				ft::Map
+// #define	_set	 			ft::Set
 #define	_is_integral 		ft::is_integral
 #define	_enable_if 			ft::enable_if
 #define	_pair 				ft::pair
