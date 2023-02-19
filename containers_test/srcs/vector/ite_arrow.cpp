@@ -13,34 +13,34 @@ int		main(void)
 		*it++ = i;
 	printSize(vct, 1);
 
-	// it = vct.begin();
-	// ite = vct.begin();
+	it = vct.begin();
+	ite = vct.begin();
 
-	// std::cout << *(++ite) << std::endl;
-	// std::cout << *(ite++) << std::endl;
-	// std::cout << *ite++ << std::endl;
-	// std::cout << *++ite << std::endl;
+	std::cout << *(++ite) << std::endl;
+	std::cout << *(ite++) << std::endl;
+	std::cout << *ite++ << std::endl;
+	std::cout << *++ite << std::endl;
 
-	// it->m();
-	// ite->m();
+	it->m();
+	ite->m();
 
-	// std::cout << *(++it) << std::endl;
-	// std::cout << *(it++) << std::endl;
-	// std::cout << *it++ << std::endl;
-	// std::cout << *++it << std::endl;
+	std::cout << *(++it) << std::endl;
+	std::cout << *(it++) << std::endl;
+	std::cout << *it++ << std::endl;
+	std::cout << *++it << std::endl;
 
-	// std::cout << *(--ite) << std::endl;
-	// std::cout << *(ite--) << std::endl;
-	// std::cout << *--ite << std::endl;
-	// std::cout << *ite-- << std::endl;
+	std::cout << *(--ite) << std::endl;
+	std::cout << *(ite--) << std::endl;
+	std::cout << *--ite << std::endl;
+	std::cout << *ite-- << std::endl;
 
-	// (*it).m();
-	// (*ite).m();
+	(*it).m();
+	(*ite).m();
 
-	// std::cout << *(--it) << std::endl;
-	// std::cout << *(it--) << std::endl;
-	// std::cout << *it-- << std::endl;
-	// std::cout << *--it << std::endl;
+	std::cout << *(--it) << std::endl;
+	std::cout << *(it--) << std::endl;
+	std::cout << *it-- << std::endl;
+	std::cout << *--it << std::endl;
 
 	return (0);
 }

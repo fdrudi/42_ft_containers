@@ -1,4 +1,8 @@
+#pragma once
+
 #include <memory>
+#include <stdexcept>
+#include <iostream>
 #include "iterator.hpp"
 #include "utility.hpp"
 
@@ -38,8 +42,7 @@ namespace ft
 		_alloc(alloc),
 		_size(count),
 		_capacity(count),
-		_begin(NULL),
-		_end(NULL)
+		_begin(NULL)
 		{
 			_begin = _alloc.allocate(count);
 			_end = _begin;
@@ -99,7 +102,7 @@ namespace ft
 		// Distruttore
 		~vector()
 		{
-			this->clear();
+			// this->clear();
 			if (this->_begin != NULL || _capacity != 0)
 				_alloc.deallocate(_begin, _capacity);
 		}
