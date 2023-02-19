@@ -10,13 +10,16 @@
 # include <iostream>
 # include <string>
 
+# define RESET	"\033[0m"
+# define RED	"\033[31m"	/* Red */
+
 // --- Class foo
 template <typename T>
 class foo {
 	public:
 		typedef T	value_type;
 
-		foo(void) : value(), _verbose(false) {std::cout << this->getValue() << std::endl; };
+		foo(void) : value(), _verbose(false) { std::cout << RED << "Constructor Called\n" << RESET; };
 		foo(value_type src, const bool verbose = false) : value(src), _verbose(verbose) { };
 		foo(foo const &src, const bool verbose = false) : value(src.value), _verbose(verbose) { };
 		~foo(void) { if (this->_verbose) std::cout << "~foo::foo()" << std::endl; };

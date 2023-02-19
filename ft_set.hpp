@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   set.hpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ddelladi <ddelladi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/13 10:54:03 by ddelladi          #+#    #+#             */
-/*   Updated: 2022/12/05 13:55:10 by ddelladi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <functional>
 #include "utility.hpp"
@@ -113,7 +101,7 @@ namespace ft
 				pointer		tmp;
 				pointer		successor;
 				iterator	ret;
-				
+
 				if (node && node != this->_sentinel)
 					ret = this->find(this->getSuccessor(node)->data);
 				else
@@ -210,7 +198,7 @@ namespace ft
 						if (toHandle2)
 							insertNode(this->_root, toHandle2, this->_root, 0);
 					}
-					
+
 				}
 				this->_alloc.deallocate(node, 1);
 				node = NULL;
@@ -301,7 +289,7 @@ namespace ft
 			ft::pair<iterator, bool> insertNode(pointer &start, pointer &node, pointer& parent, int flag)
 			{
 				ft::pair<iterator, bool>	ret;
-				
+
 				if (!start || start == this->_sentinel)
 				{
 					node->parent = parent;
@@ -404,7 +392,7 @@ namespace ft
 	{
 		typename set<T, Compare, Alloc>::iterator	iter = lhs.begin();
 		typename set<T, Compare, Alloc>::iterator	iter2 = rhs.begin();
-	
+
 		while (iter != lhs.end())
 		{
 			if (*iter != *iter2)

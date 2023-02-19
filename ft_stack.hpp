@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   stack.hpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ddelladi <ddelladi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 16:35:25 by ddelladi          #+#    #+#             */
-/*   Updated: 2022/11/29 17:37:45 by ddelladi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include "vector.hpp"
@@ -39,7 +27,7 @@ namespace ft
 
 
 			// Element access
-			
+
 			reference		top() { return (c.back()); };
 			const_reference	top() const { return (c.back()); };
 

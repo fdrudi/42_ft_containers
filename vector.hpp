@@ -36,22 +36,15 @@ namespace ft
 		// Costruttore con 'count' copie dell'elemento 'val'
 		explicit vector(size_type count, const value_type& value = value_type(), const allocator_type& alloc = allocator_type()):
 		_alloc(alloc),
-		_size(0),
-		_capacity(0),
+		_size(count),
+		_capacity(count),
 		_begin(NULL),
 		_end(NULL)
 		{
-			if (count >= 0 && count < this->max_size())
-			{
-				_size = count;
-				_capacity = count;
-				_begin = _alloc.allocate(_capacity);
-				_end = _begin;
-				while (count--)
-					_alloc.construct(_end++, value);
-			}
-			else
-				throw std::length_error("vector");
+			_begin = _alloc.allocate(count);
+			_end = _begin;
+			while (count--)
+				_alloc.construct(_end++, value);
 		};
 
 		// Costruttore con range da 'first' a 'last'

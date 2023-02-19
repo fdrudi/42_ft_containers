@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   vector.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fdrudi <fdrudi@student.42roma.it>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 19:28:01 by ddelladi          #+#    #+#             */
-/*   Updated: 2023/02/18 14:35:31 by fdrudi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include <memory>
@@ -113,7 +101,6 @@ namespace ft
 
 		~vector()
 		{
-			clear();
 			if (this->_begin != NULL || _capacity != 0)
 				_alloc.deallocate(_begin, _capacity);
 		}
@@ -228,9 +215,9 @@ namespace ft
 					this->reserve(1);
 				else
 					this->reserve(this->size() * 2);
-				position = this->begin() + dist;
 			}
 			_end++;
+			position = this->begin() + dist;
 			size_type	idx = _size + 1;
 			size_type	idx2 = _size;
 			dist = this->end() - position + 1;
@@ -307,7 +294,7 @@ namespace ft
 				_size = first - _begin;
 				_end = _begin + _size;
 				size_type	dist = ft::distance(first, last);
-				size_type	idx = last - _begin;
+				size_type	idx = _size;
 				while (dist--)
 				{
 					_alloc.destroy(_begin + idx);

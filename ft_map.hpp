@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   map.hpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ddelladi <ddelladi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 15:17:37 by ddelladi          #+#    #+#             */
-/*   Updated: 2022/12/06 14:29:22 by ddelladi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <algorithm>
 #include "utility.hpp"
@@ -90,7 +78,7 @@ namespace ft
 			size_type	erase(const key_type& key)
 			{
 				ft::pair<key_type, mapped_type>	tmp(key, mapped_type());
-				
+
 				if (erase_deep(tmp) != iterator(NULL, this->_sentinel))
 					return (1);
 				return (0);
@@ -102,7 +90,7 @@ namespace ft
 				pointer		tmp;
 				pointer		successor;
 				iterator	ret;
-				
+
 				if (node && node != this->_sentinel)
 					ret = this->find(this->getSuccessor(node)->data.first);
 				else
@@ -215,7 +203,7 @@ namespace ft
 					return (iterator(this->_sentinel, this->_sentinel));
 				return (findPointer(node, ret));
 			};
-			
+
 			const_iterator	find(const Key& key) const
 			{
 				pointer							node = this->_root;
@@ -291,7 +279,7 @@ namespace ft
 			ft::pair<iterator, bool> insertNode(pointer &start, pointer &node, pointer& parent, int flag)
 			{
 				ft::pair<iterator, bool>	ret;
-				
+
 				if (!start || start == this->_sentinel)
 				{
 					node->parent = parent;

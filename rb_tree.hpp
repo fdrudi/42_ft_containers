@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   rb_tree.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ddelladi <ddelladi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/13 13:53:02 by ddelladi          #+#    #+#             */
-/*   Updated: 2022/12/05 18:23:00 by ddelladi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <memory>
 #include <utility>
@@ -76,7 +64,7 @@ namespace ft
 		typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
-		
+
 		RBTree() :	_root(NULL),
 						_size(0),
 						_alloc(allocator_type())
@@ -124,7 +112,7 @@ namespace ft
 		size_type size() const { return this->_size; }
 		size_type max_size() const { return _alloc2.max_size(); }
 
-		
+
 
 		iterator				begin() { return (iterator(min(), _sentinel)); }
 		const_iterator			begin() const { return (const_iterator(min(), _sentinel)); }
@@ -145,7 +133,7 @@ namespace ft
 		pointer	getPredecessor(pointer const & node) const
 		{
 			pointer	tmp = node;
-			
+
 			if (node == min())
 				return (_sentinel);
 			if (tmp->child[LEFT] != _sentinel)
@@ -168,7 +156,7 @@ namespace ft
 		pointer	getSuccessor(pointer const & node) const
 		{
 			pointer	tmp = node;
-			
+
 			if (node == max())
 				return (_sentinel);
 			if (tmp->child[RIGHT] != _sentinel)
@@ -211,7 +199,7 @@ namespace ft
 				tmp = &(*tmp)->child[LEFT];
 			return (*tmp);
 		}
-		
+
 		pointer	max() const
 		{
 			pointer	node = _root;
@@ -240,7 +228,7 @@ namespace ft
 		{
 			if (this == &rhs)
 				return ;
-			
+
 			pointer			tmpRoot = this->_root;
 			pointer			tmpSentinel = this->_sentinel;
 			size_type		tmpSize = this->_size;

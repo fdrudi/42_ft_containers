@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utility.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fdrudi <fdrudi@student.42roma.it>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/12 20:03:04 by ddelladi          #+#    #+#             */
-/*   Updated: 2023/02/18 13:30:05 by fdrudi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <typeinfo>
 #include <string>
@@ -164,7 +152,7 @@ namespace ft
 	{
 		while (first1 != last1)
 		{
-			if (first2 == last2 || *first1 > *first2) return false;
+			if (first2 == last2 || *first2 < *first1) return false;
 			else if (*first1 < *first2) return true;
 			first1++;
 			first2++;
