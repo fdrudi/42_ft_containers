@@ -9,7 +9,7 @@ namespace ft
 	{
 		public:
 			typedef 			Container					container_type;
-			typedef typename	Container::value_type		value_type;
+			typedef				T							value_type;
 			typedef typename 	Container::size_type		size_type;
 			typedef typename	Container::reference		reference;
 			typedef typename	Container::const_reference	const_reference;
@@ -30,7 +30,7 @@ namespace ft
 			stack& operator=(const stack& other)
 			{
 				if (this == &other)
-						return (*this);
+					return (*this);
 				this->_c = other._c;
 				return (*this);
 			}
@@ -92,7 +92,7 @@ namespace ft
 			friend bool operator>= (const stack<V,Cont>& lhs, const stack<V,Cont>& rhs);
 
 		protected:
-			Container	_c;
+			container_type	_c;
 
 	};
 

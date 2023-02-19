@@ -16,7 +16,7 @@ class foo {
 	public:
 		typedef T	value_type;
 
-		foo(void) : value(), _verbose(false) { };
+		foo(void) : value(), _verbose(false) {std::cout << this->getValue() << std::endl; };
 		foo(value_type src, const bool verbose = false) : value(src), _verbose(verbose) { };
 		foo(foo const &src, const bool verbose = false) : value(src.value), _verbose(verbose) { };
 		~foo(void) { if (this->_verbose) std::cout << "~foo::foo()" << std::endl; };

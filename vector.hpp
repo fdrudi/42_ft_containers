@@ -232,8 +232,8 @@ namespace ft
 
 		reference			front()			{ return (*_begin); };
 		const_reference		front() const	{ return (*_begin); };
-		reference			back()			{ return (*(_begin + _size)); };
-		const_reference		back() const	{ return (*(_begin + _size)); };
+		reference			back()			{ return (*(_begin + _size - 1)); };
+		const_reference		back() const	{ return (*(_begin + _size - 1)); };
 		value_type*			data()			{ return (_begin); };	// ritorna il vettore
 		const value_type*	data() const	{ return (_begin); };	// sotto forma di array puntatore
 
@@ -319,19 +319,16 @@ namespace ft
 		void insert (iterator position, size_type n, const value_type& val)
 		{
 			size_type	dist = position - this->begin();
-			if (_size + n > _capacity)
-				this->reserve(_size + n);
+			if (this->size() + n > _capacity)
+				this->reserve(this->size() + n);
 			position = this->begin() + dist;
+			size_type dist2 = ft::distance(position, this->end());
 			_end += n;
-			dist = this->end() - position.pointed() + 1;
-			size_type i = _size + n;
-			while (dist--) // spostamento dei dati precedentemente inseriti
-			{
-				_alloc.construct(_begin + i, _begin[i - 1]);
-				i--;
-			}
-			for (int j = 0; j < n; j++)
-				_alloc.construct(position.pointed() + j, val);
+			size_type i = 1;
+			while (dist2--) // spostamento dei dati precedentemente inseriti
+				_alloc.construct(_end - i++  , _begin[dist2 + dist]);
+			for (size_type j = 0; j < n; j++)
+				_alloc.construct(_begin + dist + j, val);
 			_size += n;
 		};
 
