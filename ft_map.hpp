@@ -26,11 +26,13 @@ namespace ft
 			typedef Compare																key_compare;
 
 			map() {};
+
 			explicit map(const Compare& comp, const Allocator& alloc = Allocator())
 			{
 				(void)comp;
 				(void)alloc;
 			};
+
 			template <class InputIt>
 			map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 			{
@@ -38,10 +40,12 @@ namespace ft
 				(void)comp;
 				(void)alloc;
 			};
+
 			map(const map& other)
 			{
 				this->insert(other.begin(), other.end());
 			};
+
 			map&	operator=(map const & rhs)
 			{
 				if (this == &rhs)

@@ -21,6 +21,8 @@ namespace ft
 		RIGHT
 	};
 
+	/*Define a struct to represent a node in the RBTree. It stores a value, a color,
+	  pointers to its parent and its left and right children. */
 	template <typename T>
 	struct Node
 	{
@@ -29,12 +31,15 @@ namespace ft
 		Node		*child[2];
 		T 			data;
 
-		template <class U, class V>
+		template <class U, class V> //Constructor for creating a node from a value
 		Node(ft::pair<U, V> const & val) : data(val) {};
 	};
 
+	/* Define a struct to represent a node in the RBTree. It stores a key-value pair,
+	   pointers to its parent and its left and right children, and its color. */
 	template <class Pair>
-	struct NodeRB2 {
+	struct NodeRB2
+	{
 		NodeRB2					*parent;
 		NodeRB2 				*left;
 		NodeRB2 				*right;
@@ -42,7 +47,18 @@ namespace ft
 		int						color;
 	};
 
-	template <class Key, class NodeType, class Iterator, class ConstIterator, class Compare = std::less<Key>, class Alloc = std::allocator<Key> >
+	/* Define a class to represent a Red-Black Tree (RBTree) with nodes of type NodeType,
+	   keys of type Key, and values of type Value. The RBTree is implemented using a binary
+	   search tree, and satisfies the properties of a red-black tree (e.g., every node is
+	   either red or black, the root is black, no two adjacent nodes can be red, etc.).
+	   The class also provides various methods for manipulating the tree, including
+	   insert, remove, find, and traversal methods. */
+	template <	class Key,
+				class NodeType,
+				class Iterator,
+				class ConstIterator,
+				class Compare = std::less<Key>,
+				class Alloc = std::allocator<Key> >
 	class RBTree
 	{
 
@@ -65,6 +81,10 @@ namespace ft
 		typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 
+		/* Questo è il costruttore di default della classe RBTree.
+		   Viene inizializzato l'albero con la radice NULL, la dimensione 0 e un allocator di tipo allocator_type().
+		   Viene inoltre allocato il sentinel, un elemento sentinella, che sarà utilizzato come elemento terminale dell'albero e colorato come SENTINEL.
+		   Il sentinel viene poi impostato come radice dell'albero, e viene assegnato come padre della radice. */
 		RBTree() :	_root(NULL),
 						_size(0),
 						_alloc(allocator_type())
@@ -75,6 +95,11 @@ namespace ft
 			_sentinel->parent = _root;
 		};
 
+		/* Il costruttore di copia RBTree(RBTree const &src) crea una nuova istanza di RBTree come copia di src.
+		   Inizializza il membro _alloc con un'istanza di allocator_type(), alloca un nodo sentinella _sentinel attraverso la funzione allocate() dell'allocator _alloc,
+		   inizializza i campi di _sentinel con SENTINEL per il colore e con _root per il puntatore del genitore, quindi assegna _sentinel a _root e inizializza _size a 0.
+		   Successivamente, itera sugli elementi di src usando l'iteratore iterator e inserisce ogni valore nell'albero attraverso la funzione insert().
+		   Alla fine, viene creata una copia dell'albero src. */
 		RBTree(RBTree const &src)
 		{
 			_alloc = allocator_type();
@@ -89,6 +114,12 @@ namespace ft
 				this->insert(*iter++);
 		};
 
+		/* Questa è la definizione dell'operatore di assegnazione, ovvero l'operatore che permette di copiare una RBTree in un'altra.
+		   L'operatore è ridefinito perché, essendo una struttura di dati complessa, la copia bit a bit dei dati non è sufficiente per effettuare una copia corretta.
+		   Il codice controlla innanzitutto che gli oggetti non siano gli stessi (in tal caso ritorna il puntatore all'oggetto corrente).
+		   Dopodiché, copia l'allocator dall'oggetto passato come parametro, alloca l'oggetto _sentinel, lo imposta come sentinella (SENTELIN),
+		   ne assegna il genitore a _root e imposta il valore di _size a 0. Infine, chiama la funzione insert per ogni elemento nella RBTree passata come parametro, copiandoli tutti nella RBTree corrente.
+		   Il valore di ritorno è l'oggetto RBTree corrente, perché in C++ l'operatore di assegnazione deve restituire un riferimento all'oggetto che viene assegnato. */
 		RBTree &operator=(RBTree const &rhs)
 		{
 			if (this == &rhs)
@@ -104,16 +135,23 @@ namespace ft
 			return (*this);
 		};
 
+		/*Libera la memoria allocata per il nodo sentinella.*/
 		~RBTree() { _alloc.deallocate(_sentinel, 1); };
 
+		/* Restituisce l'allocator utilizzato per allocare la memoria per il RBTree. */
 		allocator_type	get_allocator() const { return (this->_alloc); }
 
+		/* Restituisce true se il RBTree è vuoto, false altrimenti. */
 		bool empty() const { return ((!this->_size) ? true : false); }
+
+		/* Restituisce il numero di elementi presenti nel RBTree. */
 		size_type size() const { return this->_size; }
+
+		/* Restituisce il massimo numero di elementi che il RBTree può contenere in base alla politica di allocazione della memoria. */
 		size_type max_size() const { return _alloc2.max_size(); }
 
 
-
+		/* Restituiscono degli iteratori che permettono di iterare tra gli elementi del RBTree. */
 		iterator				begin() { return (iterator(min(), _sentinel)); }
 		const_iterator			begin() const { return (const_iterator(min(), _sentinel)); }
 		iterator				end() { return iterator(_sentinel, _sentinel); }
@@ -123,13 +161,31 @@ namespace ft
 		reverse_iterator		rend() { return (reverse_iterator(begin())); }
 		const_reverse_iterator	rend() const { return (const_reverse_iterator(begin())); }
 
-
+		/* Questo metodo accetta un puntatore a nodo e un valore di chiave e cerca ricorsivamente il nodo nell'albero con quella chiave.
+		   Restituisce un iteratore al nodo se trovato, altrimenti restituisce un iteratore alla fine. */
 		virtual iterator					findPointer(pointer& start, Key const & val) const = 0;
+
+		/* Questo metodo accetta un valore di chiave e rimuove dal sottoalbero radicato al nodo con la chiave specificata tutti i nodi con quella chiave.
+		   Restituisce il numero di nodi rimossi. */
 		virtual iterator					erase_deep(Key const & val) = 0;
+
+		/* questo metodo accetta un valore di chiave e inserisce un nuovo nodo nell'albero con quella chiave.
+		   Restituisce un oggetto pair composto da un iteratore al nodo appena inserito
+		   e un flag booleano che indica se l'inserimento è avvenuto con successo o se la chiave era già presente nell'albero. */
 		virtual ft::pair<iterator, bool>	insert(Key const &val) = 0;
+
+		/* Questo metodo accetta tre puntatori a nodi e un flag.
+		   Inserisce il nodo node nell'albero come figlio del nodo parent, avendo come figlio destro o sinistro a seconda del valore di flag.
+		   Il parametro start è il puntatore alla radice dell'albero. Restituisce un oggetto pair composto da un iteratore al nodo appena inserito e un flag booleano che indica se l'inserimento è avvenuto con successo.*/
 		virtual ft::pair<iterator, bool>	insertNode(pointer &start, pointer &node, pointer& parent, int flag) = 0;
+
 		virtual void						clear() = 0;
 
+		/* La funzione controlla se il nodo passato come argomento è il nodo più piccolo dell'albero.
+		   In questo caso, restituisce un puntatore al sentinella, che rappresenta il minimo valore nell'albero.
+		   Se il nodo non è il minimo, cerca il massimo valore nel sottoalbero sinistro del nodo.
+		   Se esiste, restituisce il massimo valore. Se non esiste, la funzione risale l'albero risalendo i genitori
+		   fino a trovare il primo genitore che ha il figlio destro uguale al nodo passato come argomento e restituisce questo genitore. */
 		pointer	getPredecessor(pointer const & node) const
 		{
 			pointer	tmp = node;
@@ -153,6 +209,10 @@ namespace ft
 			}
 		}
 
+		/* La funzione controlla se il nodo passato come parametro è il massimo della pianta: in questo caso restituisce il sentinella.
+		   Altrimenti, se il figlio destro del nodo non è il sentinella, restituisce il nodo minimo del sottoalbero radicato in quel figlio destro.
+		   In caso contrario, cerca il primo genitore a sinistra e restituisce tale nodo, oppure il sentinella se non trova un genitore a sinistra.
+		   Il comportamento di getPredecessor è simile, ma cerca il predecessore invece del successore del nodo passato come parametro. */
 		pointer	getSuccessor(pointer const & node) const
 		{
 			pointer	tmp = node;
@@ -176,6 +236,11 @@ namespace ft
 			}
 		}
 
+		/* In questa implementazione, viene innanzitutto inizializzato un puntatore node all'indirizzo della radice _root.
+		   Se l'albero è vuoto o la radice è il sentinella, viene restituito il puntatore al sentinella.
+		   In caso contrario, il ciclo while viene eseguito finché il puntatore node non punta a un nodo che non ha un figlio sinistro oppure il figlio sinistro è il sentinella.
+		   In questo caso, il puntatore viene aggiornato al puntatore al figlio sinistro del nodo corrente.
+		   Quando il ciclo termina, il puntatore node punta al nodo con la chiave minima e viene restituito il suo valore. */
 		pointer	min() const
 		{
 			const pointer*	node = &_root;
