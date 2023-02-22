@@ -253,6 +253,11 @@ namespace ft
 			return (*node);
 		}
 
+		/* La funzione 'min' prende un puntatore a un nodo dell'albero e restituisce un puntatore al nodo con la chiave minima dell'albero il cui nodo radice è il nodo passato come parametro.
+		   In pratica, la funzione si sposta lungo il sottoalbero sinistro del nodo passato come parametro finché non raggiunge un nodo che non ha figli sinistri (o il sentinella), 
+		   e restituisce tale nodo. 
+		   Se il nodo passato come parametro è il minimo dell'albero, allora viene restituito il suo stesso puntatore.
+		   La funzione usa un puntatore const a un puntatore non const in modo da poter modificare il puntatore indiretto senza modificare il valore del puntatore originale. */
 		pointer	min(pointer const & node) const
 		{
 			const pointer*	tmp = &node;
@@ -265,6 +270,11 @@ namespace ft
 			return (*tmp);
 		}
 
+		/* La funzione 'max' restituisce un puntatore all'elemento con la chiave massima nell'albero.
+		   Inizialmente, viene inizializzato un puntatore node con la radice dell'albero _root. 
+		   Se la radice è null o _sentinel, l'albero è vuoto e viene restituito il puntatore _sentinel.
+		   Altrimenti, si itera sull'albero a partire dalla radice, seguendo sempre il figlio destro finché esiste un figlio destro e non è il _sentinel. 
+		   Quando non è più possibile seguire il figlio destro, l'iterazione termina e viene restituito il puntatore al nodo trovato come massimo. */
 		pointer	max() const
 		{
 			pointer	node = _root;
@@ -277,6 +287,10 @@ namespace ft
 			return (node);
 		}
 
+		/* La funzione riceve un parametro node che rappresenta la radice del sottoalbero in cui cercare il valore massimo.
+		   Inizia esaminando il nodo di partenza, e finché esiste un figlio destro, la funzione continua a scendere nell'albero, selezionando ogni volta il figlio destro. 
+		   Quando non esiste più un figlio destro, allora il nodo corrente è il massimo del sottoalbero radicato in node, e viene restituito. 
+		   Se node è un puntatore nullo o punta al nodo sentinella, la funzione restituisce il puntatore al nodo sentinella. */
 		pointer	max(pointer const & node) const
 		{
 			pointer	tmp = node;
@@ -289,6 +303,12 @@ namespace ft
 			return (tmp);
 		}
 
+		/* Questo metodo scambia i contenuti dell'oggetto corrente con quelli di un altro oggetto RBTree passato per riferimento come parametro.
+		   Il metodo inizia con un controllo per evitare di scambiare l'oggetto corrente con se stesso, quindi salva temporaneamente i membri dell'oggetto corrente 
+		   (radice, sentinella, dimensione, tipo di allocazione e comparatore) in variabili temporanee. 
+		   Successivamente, i membri dell'oggetto corrente vengono sovrascritti con i membri dell'oggetto rhs. 
+		   Infine, i membri dell'oggetto rhs vengono sovrascritti con i valori temporanei salvati in precedenza dall'oggetto corrente.
+		   In questo modo, alla fine dell'esecuzione, l'oggetto corrente e l'oggetto rhs hanno scambiato i loro contenuti. */
 		void			swap(RBTree & rhs)
 		{
 			if (this == &rhs)
@@ -327,6 +347,14 @@ namespace ft
 		allocator_type2	_alloc2;
 		Compare			_c;
 
+		/* Questa è una funzione privata della classe RBTree che prende un nodo e restituisce il suo unico figlio, se tale figlio non ha figli a sua volta (ovvero è una foglia).
+		   La funzione controlla se il nodo ha un figlio sinistro ma non destro o viceversa, in tal caso restituisce il figlio che soddisfa questa condizione. 
+		   Se il nodo ha entrambi i figli o nessun figlio, la funzione restituisce NULL.
+		   Successivamente, viene controllato se il figlio restituito ha a sua volta figli. Se il figlio ha figli, la funzione restituisce NULL. Altrimenti, la funzione restituisce il figlio.
+		   Questa funzione viene utilizzata internamente dalla classe RBTree durante la cancellazione di un nodo con zero o un solo figlio. 
+		   Se il nodo ha un solo figlio, il figlio viene utilizzato per sostituire il nodo cancellato. 
+		   La funzione getOnlyChildWithoutChildren viene utilizzata per controllare se il figlio del nodo cancellato è effettivamente una foglia. 
+		   In caso contrario, la cancellazione non può essere eseguita e viene restituito un errore. */
 		pointer	getOnlyChildWithoutChildren(pointer const & node)
 		{
 			pointer	child;
