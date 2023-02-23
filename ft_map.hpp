@@ -397,7 +397,7 @@ namespace ft
 				return (ret);
 			}
 
-			ft::pair<iterator, iterator>				equal_range(const Key& key)
+			ft::pair<iterator, iterator>	equal_range(const Key& key)
 			{
 				return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
 			}

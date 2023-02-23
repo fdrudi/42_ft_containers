@@ -12,14 +12,20 @@ namespace ft
 	{
 		public:
 
-			typedef	Key																	key_type;
+			typedef Key																	key_type;
 			typedef	T																	mapped_type;
-			typedef	ft::pair<const key_type, mapped_type>								value_type;
-			typedef typename	Allocator::template rebind<Node<value_type> >::other	allocator_type;
+			typedef ft::pair<const Key, T>												value_type;
+			typedef typename ft::pair<const Key, T>										Pair;
+			typedef typename ft::NodeRB2<Pair>											originalNode;
+			typedef typename Allocator::template rebind<Node<value_type> >::other		allocator_type;
+			typedef typename allocator_type::reference									reference;
+			typedef typename allocator_type::const_reference							const_reference;
+			typedef typename allocator_type::pointer									pointer;
+			typedef typename allocator_type::const_pointer								const_pointer;
+			typedef typename allocator_type::size_type									size_type;
 			typedef RBIterator<value_type, Compare, Node<value_type> >					iterator;
 			typedef RBIteratorConst<value_type, Compare, Node<value_type> >				const_iterator;
-			typedef typename allocator_type::pointer									pointer;
-
+			typedef Compare																key_compare;
 
 
 			// * COSTRUTTORI * //
@@ -27,15 +33,15 @@ namespace ft
 			map() {};
 
 			// Default Constructor (empty)
-			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+			explicit map(const Compare& comp, const Allocator& alloc = Allocator())
 			{
 				(void)comp;
 				(void)alloc;
 			};
 
-			// Range Constructor (da 'fisrt' a 'last')
+			// Range Constructor (da 'first' a 'last')
 			template <class InputIt>
-			map (InputIt first, InputIt last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+			map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator())
 			{
 				(void)comp;
 				(void)alloc;
@@ -49,7 +55,7 @@ namespace ft
 			};
 
 			// Copy Assign Operator
-			map& operator=( const map& other )
+			map& operator=( map const & other )
 			{
 				if (this == &other)
 					return (*this);
@@ -69,7 +75,7 @@ namespace ft
 			// * MEMBER FUNCTION *//
 
 
-			mapped_type& operator[] (const key_type& k)
+			T& operator[] (const Key& key)
 			{
 				try
 				{
@@ -83,18 +89,22 @@ namespace ft
 				}
 			};
 
-			mapped_type& at (const key_type& k)
+			T& at (const Key& key)
 			{
-				iterator tmp = find(k);
+				iterator tmp = find(key);
+
+				if (tmp.node == this->_sentinel)
+					throw std::out_of_range("ft::map::at");
+				return (tmp->second);
+			};
+
+			const mapped_type& at (const Key& key) const
+			{
+				iterator tmp = find(key);
 
 				if (tmp.node == this->_sentinel)
 					throw std::out_of_range("ft::map::at");
 				return (tmp.second);
-			};
-
-			const mapped_type& at (const key_type& k) const
-			{
-				return ((const) at(k));
 			};
 
 			/*	Inserisce un valore all'interno dell'albero. Dal valore crea un nodo e controlla
@@ -102,10 +112,10 @@ namespace ft
 				Altrimenti controlla la prima direzione da prendere dalla root in modo da avere
 				un parent da utilizzare nella funzione insertNode. Altrimenti elimina il nodo
 				e ritorna false. */
-			std::pair<iterator, bool> insert( const value_type& value )
+			ft::pair<iterator, bool> insert( ft::pair<const Key, T> const &value )
 			{
 				ft::pair<iterator, bool>	dst;
-				pointer node = new Node<value_type>(val);
+				pointer node = new Node<value_type>(value);
 
 				node->color = RED;
 				node->parent = this->_sentinel;
@@ -124,9 +134,9 @@ namespace ft
 				}
 				else
 				{
-					if (this->_c(val.first, this->_root->data.first) && this->_root->data.first != val.first)
+					if (this->_c(value.first, this->_root->data.first) && this->_root->data.first != value.first)
 						return (insertNode(this->_root->child[LEFT], node, this->_root, 1));
-					else if (this->_c(this->_root->data.first, val.first) && this->_root->data.first != val.first)
+					else if (this->_c(this->_root->data.first, value.first) && this->_root->data.first != value.first)
 						return (insertNode(this->_root->child[RIGHT], node, this->_root, 1));
 					else
 					{
@@ -146,14 +156,14 @@ namespace ft
 					this->insert(*first++);
 			};
 
-	//!	iterator insert (iterator position, const value_type& val)
-		/*	{
+			iterator insert (iterator position, const value_type& val)
+			{
 				ft::pair<iterator, bool> dst;
 
 				(void)position;
-				dst this->insert(val);
+				dst = this->insert(val);
 				return (dst.first);
-			};	*/
+			};
 
 			/*	Funzione helper ricorsiva che serve ad inserire il nodo controllando le dipendenze con il parent
 				che viene modificato finchè non arriva a nullo o a sentinel, andando poi ad inserire il nodo effettivamente.
@@ -162,7 +172,7 @@ namespace ft
 			{
 				ft::pair<iterator, bool>	dst;
 
-				if (!start || start = this->_sentinel)
+				if (!start || start == this->_sentinel)
 				{
 					node->parent = parent;
 					if (this->_c(node->data.first, parent->data.first))
@@ -174,9 +184,10 @@ namespace ft
 						this->_size++;
 					this->balanceInsert(start);
 					dst.first = iterator(node, this->_sentinel);
-					dst.first = false;
+					dst.second = true;
+					return (dst);
 				}
-				if (this->_c(node->data.fisrt, start->data.fisrt))
+				if (this->_c(node->data.first, start->data.first))
 					return (insertNode(start->child[LEFT], node, start, flag));
 				else if (this->_c(start->data.first, node->data.first))
 					return (insertNode(start->child[RIGHT], node, start, flag));
@@ -216,7 +227,7 @@ namespace ft
 			   Il successore/predecessore viene quindi rimosso come sopra, e il nodo originale viene sostituito dal successore/predecessore.
 			   In tutti i casi, il nodo viene deallocato e la dimensione della mappa viene ridotta.
 			   La funzione restituisce un iteratore al successore dell'elemento rimosso. */
-			iterator erase_deep(Key const & val)
+			iterator erase_deep(ft::pair<const Key, T> const & val)
 			{
 				// La funzione cerca il nodo dell'albero che corrisponde alla chiave specificata e lo memorizza nella variabile "node".
 				pointer		node = this->find(val.first).node;
@@ -241,8 +252,8 @@ namespace ft
 					temp = node->parent;
 					if (node->color == BLACK && node != this->_root)
 						this->balanceDelete(node);
-					if (tmp != this->_sentinel)
-						this->unlink(tmp, node);
+					if (temp != this->_sentinel)
+						this->unlink(temp, node);
 					else
 					{
 						this->_root = this->_sentinel;
@@ -353,11 +364,11 @@ namespace ft
 					this->erase(this->min());
 			};
 
-			class value_compare : public std::binary_function<value_type,value_type,bool>
+			class value_compare : public std::binary_function<value_type, value_type,bool>
 			{
 				friend class map<Key, T>;
 
-				protected:
+				private:
 					Compare comp;
 					value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
 				public:
@@ -374,58 +385,62 @@ namespace ft
 				return (value_compare(this->key_comp()));
 			};
 
-			iterator find (const key_type& k)
+			iterator find(const Key& key)
 			{
 				pointer							node = this->_root;
 				ft::pair<key_type, mapped_type>	ret(key, mapped_type());
 
 				if (!node || node == this->_sentinel)
-					return (iterator(_sentinel, _sentinel));
+					return (iterator(this->_sentinel, this->_sentinel));
 
 				return (findPointer(node, ret));
 			};
 
-			const_iterator find (const key_type& k) const
+			const_iterator find(const Key& key) const
 			{
 				pointer							node = this->_root;
 				ft::pair<key_type, mapped_type>	ret(key, mapped_type());
 
 				if (!node || node == this->_sentinel)
-					return (iterator(_sentinel, _sentinel));
+					return (iterator(this->_sentinel, this->_sentinel));
 
 				return (findPointer(node, ret));
 			};
 
-			iterator	findPointer(pointer& start, Key const & val) const
+			iterator	findPointer(pointer& start, ft::pair<const Key, T> const & val) const
 			{
-				if (!start || start.color == SENTINEL)		// valore inesistente
-					return (iterator(_sentinel, _sentinel));
+				if (!start || start->color == SENTINEL)		// valore inesistente
+					return (iterator(this->_sentinel, this->_sentinel));
+
 				if (start->data.first == val.first)			// valore uguale
-					return (iterator(start, _sentinel));
+					return (iterator(start, this->_sentinel));
+				if (this->_c(val.first, start->data.first))
+					return (findPointer(start->child[LEFT], val));
 				if (this->_c(start->data.first, val.first))	// valore maggiore
 					return (findPointer(start->child[RIGHT], val));
-				return (findPointer(start->child[LEFT], val));
+				else
+					return (iterator(start, this->_sentinel));
 			};
 
 			/* controlla l'esistenza della key all'interno della map. */
-			size_type count (const key_type& k) const
+			size_type count (const Key& key) const
 			{
-				if (find(k).node == this->_sentinel)
+				if (find(key).node == this->_sentinel)
 					return (0);
 				return (1);
 			};
 
 			/* ritorna il primo elemento maggiore (basandosi sugli iteratori) della map. */
-			iterator lower_bound (const key_type& k)
+			iterator lower_bound (const Key& key)
 			{
 				iterator	tmp = this->begin();
 
-				while (tmp != this->end() && this->_c(tmp.node->data.first, k))
+				while (tmp != this->end() && this->_c(tmp.node->data.first, key))
 					tmp++;
 				return (tmp);
 			};
 
-			const_iterator lower_bound (const key_type& k) const
+			const_iterator lower_bound (const Key& k) const
 			{
 				const_iterator	tmp = this->begin();
 
@@ -435,7 +450,7 @@ namespace ft
 			};
 
 			/* restituisce un iteratore all'elemento con la key strettamente maggiore della key data. */
-			iterator upper_bound (const key_type& k)
+			iterator upper_bound (const Key& k)
 			{
 				iterator	tmp = this->begin();
 
@@ -444,7 +459,7 @@ namespace ft
 				return (tmp);
 			};
 
-			const_iterator upper_bound (const key_type& k) const;
+			const_iterator upper_bound (const Key& k) const
 			{
 				const_iterator	tmp = this->begin();
 
@@ -455,49 +470,49 @@ namespace ft
 
 			/*	ritorna un pair con il primo elemento avente la key data e il primo elemento maggiore.
 				Se il first e il second sono uguali, allora non esistono elementi con la chiave data. */
-			ft::pair<iterator,iterator> equal_range (const key_type& k)
+			ft::pair<iterator,iterator> equal_range (const Key& key)
 			{
 				return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
 			};
 
-			ft::pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
+			ft::pair<const_iterator,const_iterator> equal_range (const Key& key) const
 			{
 				return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
 			};
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator==( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return ((lhs.size() == rhs.size()) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator!=( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return (!(lhs == rhs));
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator<( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator<=( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return (!(lhs > rhs));
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator>( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return (!(lhs == rhs || lhs < rhs));
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	bool operator>=( const ft::map<Key, T, Compare, Alloc>& lhs, const ft::map<Key, T, Compare, Alloc>& rhs )
 	{
 		return (!(lhs < rhs));
 	};
