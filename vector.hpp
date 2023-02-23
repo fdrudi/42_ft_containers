@@ -342,7 +342,6 @@ namespace ft
 			if (!is_valid)
 				throw ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::type>();
 
-
 			size_type	positionDist = position - this->begin();
 			size_type	finalSize = this->size() + ft::distance(first, last);
 			size_type	new_cap = this->capacity();
@@ -360,48 +359,12 @@ namespace ft
 			_end = _begin + finalSize;
 			_size = finalSize;
 			size_type	dist = ft::distance(first, last);
-			try
-			{
-				int i = 1;
-				while (toMove--)
-					_begin[_size - i++] = _begin[positionDist + toMove];
-				while (dist--)
-					_begin[positionDist++] = *first++;
-			}
-			catch (...)
-			{
-				_size = 0;
-				_capacity = 0;
-				throw "hey";
-			}
-			// const size_type	n = ft::distance(first, last);
-			// size_type		dist = position - this->begin();
-			// size_type		finalSize = _size - n;
 
-			// if (finalSize > _capacity)
-			// {
-			// 	if (_capacity == 0)
-			// 		this->reserve(n);
-			// 	else
-			// 	{
-			// 		while (finalSize > _capacity)
-			// 			this->reserve(_capacity * 2);
-			// 	}
-			// 	position = this->begin() + dist;
-			// 	_end = _begin + _size;
-			// }
-			// dist = ft::distance(position, this->end());
-			// _end = _begin + finalSize;
-			// size_type i = finalSize;
-			// while (dist--) // spostamento dei dati precedentemente inseriti
-			// {
-			// 	this->_alloc.construct(_begin + i, _begin[i - 1]);
-			// 	i--;
-			// }
-			// for (int j = 0; j < n; j++)
-			// 	_alloc.construct(position + j, first++);
-			// _size = finalSize;
-			// return ;
+			int i = 1;
+			while (toMove--)
+				_begin[_size - i++] = _begin[positionDist + toMove];
+			while (dist--)
+				_begin[positionDist++] = *first++;
 		};
 
 		/* elimina il valore nel punto position, spostando tutti gli altri elementi */

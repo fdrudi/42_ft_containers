@@ -1,4 +1,5 @@
 #pragma once
+
 #include <algorithm>
 #include "utility.hpp"
 #include "rb_tree.hpp"
@@ -13,10 +14,12 @@ namespace ft
 
 			typedef	Key																	key_type;
 			typedef	T																	mapped_type;
-			typedef	pair<const key_type, mapped_type>									value_type;
+			typedef	ft::pair<const key_type, mapped_type>								value_type;
 			typedef typename	Allocator::template rebind<Node<value_type> >::other	allocator_type;
 			typedef RBIterator<value_type, Compare, Node<value_type> >					iterator;
 			typedef RBIteratorConst<value_type, Compare, Node<value_type> >				const_iterator;
+			typedef typename allocator_type::pointer									pointer;
+
 
 
 			// * COSTRUTTORI * //
@@ -94,18 +97,63 @@ namespace ft
 				return ((const) at(k));
 			};
 
+			/*	Inserisce un valore all'interno dell'albero. Dal valore crea un nodo e controlla
+				se la mappa è vuota e in caso imposta il nodo come nuova root.
+				Altrimenti controlla la prima direzione da prendere dalla root in modo da avere
+				un parent da utilizzare nella funzione insertNode. Altrimenti elimina il nodo
+				e ritorna false. */
 			std::pair<iterator, bool> insert( const value_type& value )
 			{
+				ft::pair<iterator, bool>	dst;
+				pointer node = new Node<value_type>(val);
 
+				node->color = RED;
+				node->parent = this->_sentinel;
+				node->child[LEFT] = this->_sentinel;
+				node->child[RIGHT] = this->_sentinel;
+
+				if (this->empty())
+				{
+					this->_root = node;
+					this->_sentinel->parent = node;
+					node->color = BLACK;
+					this->_size++;
+					dst.first = iterator(node, this->_sentinel);
+					dst.second = true;
+					return (dst);
+				}
+				else
+				{
+					if (this->_c(val.first, this->_root->data.first) && this->_root->data.first != val.first)
+						return (insertNode(this->_root->child[LEFT], node, this->_root, 1));
+					else if (this->_c(this->_root->data.first, val.first) && this->_root->data.first != val.first)
+						return (insertNode(this->_root->child[RIGHT], node, this->_root, 1));
+					else
+					{
+						dst.first = find(node->data.first);
+						delete node;
+						dst.second = false;
+						return (dst);
+					}
+				}
 			};
 
+			/* Inserisce un range di nodi */
 			template< class InputIt >
 			void insert( InputIt first, InputIt last )
 			{
-
+				while (first != last)
+					this->insert(*first++);
 			};
 
-			//!iterator insert (iterator position, const value_type& val);
+	//!	iterator insert (iterator position, const value_type& val)
+		/*	{
+				ft::pair<iterator, bool> dst;
+
+				(void)position;
+				dst this->insert(val);
+				return (dst.first);
+			};	*/
 
 			/*	Funzione helper ricorsiva che serve ad inserire il nodo controllando le dipendenze con il parent
 				che viene modificato finchè non arriva a nullo o a sentinel, andando poi ad inserire il nodo effettivamente.
@@ -138,20 +186,25 @@ namespace ft
 				return (dst);
 			};
 
-			iterator erase(iterator pos)
+			void	erase(iterator pos)
 			{
+				this->erase_deep(*pos);
+			}
 
-			};
-
-			iterator erase(iterator first, iterator last)
+			void	erase(iterator first, iterator last)
 			{
+				while (first != last)
+					this->erase_deep(*first++);
+			}
 
-			};
-
-			size_type erase( const key_type& key )
+			size_type	erase(const key_type& key)
 			{
+				ft::pair<key_type, mapped_type>	tmp(key, mapped_type());
 
-			};
+				if (erase_deep(tmp) != iterator(NULL, this->_sentinel))
+					return (1);
+				return (0);
+			}
 
 			/* Questa funzione rimuove un elemento dalla mappa utilizzando una ricerca in profondità.
 			   In generale, la funzione cerca l'elemento con la chiave specificata e poi decide come rimuoverlo
@@ -165,12 +218,161 @@ namespace ft
 			   La funzione restituisce un iteratore al successore dell'elemento rimosso. */
 			iterator erase_deep(Key const & val)
 			{
+				// La funzione cerca il nodo dell'albero che corrisponde alla chiave specificata e lo memorizza nella variabile "node".
+				pointer		node = this->find(val.first).node;
+				pointer		temp;
+				pointer		successor;
+				iterator 	ret;
 
+				/* Viene controllato se il nodo esiste nell'albero e non è il nodo sentinella dell'albero,
+				   altrimenti viene restituita un'istanza dell'iteratore con valore nullo e puntatore al nodo sentinella. */
+				if (node && node != this->_sentinel)
+					ret = this->find(this->getSuccessor(node)->data.first);
+				else
+					return (iterator(NULL, this->_sentinel));
+
+				/* Se il nodo non ha figli o ha entrambi i figli come nodi sentinella,
+				   viene eseguita la cancellazione del nodo. Viene controllato se il nodo cancellato è nero e se non è la radice dell'albero.
+				   In questo caso, viene richiamata la funzione "balanceDelete" per bilanciare l'albero.
+				   Successivamente, viene eseguita la disconnessione del nodo dall'albero tramite la funzione "unlink"
+				   se il padre del nodo è diverso dal nodo sentinella. Altrimenti, viene impostata la radice dell'albero come il nodo sentinella. */
+				if ((!node->child[LEFT] && !node->child[RIGHT]) || (node->child[LEFT] == this->_sentinel && node->child[RIGHT] == this->_sentinel))
+				{
+					temp = node->parent;
+					if (node->color == BLACK && node != this->_root)
+						this->balanceDelete(node);
+					if (tmp != this->_sentinel)
+						this->unlink(tmp, node);
+					else
+					{
+						this->_root = this->_sentinel;
+						this->_sentinel->parent = this->_root;
+					}
+				}
+				/* Se il nodo ha un solo figlio, viene eseguita la cancellazione del nodo.
+				   Viene controllato se il nodo cancellato è nero e se non è la radice dell'albero.
+				   In questo caso, viene richiamata la funzione "balanceDelete" per bilanciare l'albero.
+				   Il figlio del nodo viene collegato al padre del nodo cancellato tramite la funzione "link" se il nodo cancellato non è la radice dell'albero.
+				   Altrimenti, viene impostata la radice dell'albero come il figlio del nodo cancellato. */
+				else if (this->oneChild(node) != this->_sentinel)
+				{
+					if (node->color == BLACK && node != this->_root)
+					{
+						if (this->oneChild(node)->color != RED)
+							this->balanceDelete(node);
+						else
+							this->oneChild(node)->color = BLACK;
+					}
+					this->oneChild(node)->parent = node->parent;
+					if (node != this->_root)
+						this->link(node->parent, node, this->oneChild(node));
+					else
+					{
+						this->_root = this->oneChild(node);
+						this->_sentinel->parent = this->_root;
+					}
+				}
+				/* Se il nodo ha entrambi i figli, viene eseguita la cancellazione del nodo.
+				   Viene selezionato il successore del nodo cancellato.
+				   Se il successore ha un figlio destro diverso dal nodo sentinella,
+				   viene impostato a questo il padre del successore tramite la funzione "unlink".
+				   Successivamente, il successore viene collegato al padre del nodo cancellato tramite la funzione "link".
+				   Infine, i figli del nodo cancellato vengono collegati al successore.
+				   Se il nodo cancellato è la radice dell'albero,
+				   viene eseguita una procedura speciale per collegare correttamente il figlio del nodo cancellato con il nuovo nodo radice.*/
+				else
+				{
+					if (this->_c(node->data.first, this->_root->data.first))
+						successor = this->getSuccessor(node);
+					else
+						successor = this->getPredecessor(node);
+					this->balanceDelete(successor);
+					if (successor->child[RIGHT] != this->_sentinel)
+					{
+						successor->child[RIGHT] = this->_sentinel;
+					}
+					if (node != this->_root)
+					{
+						this->unlink(successor->parent, successor);
+						this->link(node->parent, node, successor);
+						if (node->child[LEFT] != this->_sentinel)
+						{
+							node->child[LEFT]->parent = successor;
+							successor->child[LEFT] = node->child[LEFT];
+						}
+						if (node->child[RIGHT] != this->_sentinel)
+						{
+							if (successor->child[RIGHT] != this->_sentinel)
+								this->link(successor->parent, successor, successor->child[RIGHT]);
+							node->child[RIGHT]->parent = successor;
+							successor->child[RIGHT] = node->child[RIGHT];
+						}
+					}
+					else
+					{
+						pointer toHandle = NULL;
+						pointer	toHandle2 = NULL;
+						this->_root = successor;
+						this->_sentinel->parent = successor;
+						if (this->_root->parent->child[LEFT] == this->_root)
+							this->_root->parent->child[LEFT] = this->_sentinel;
+						else
+							this->_root->parent->child[RIGHT] = this->_sentinel;
+						this->_root->parent = this->_sentinel;
+						if (node->child[RIGHT] == successor)
+						{
+							if (node->child[RIGHT] != this->_sentinel)
+								toHandle = node->child[RIGHT];
+							this->_root->child[LEFT] = node->child[LEFT];
+							node->child[LEFT]->parent = this->_root;
+							this->_root->color = BLACK;
+						}
+						else
+						{
+							if (node->child[LEFT] != this->_sentinel)
+								toHandle2 = node->child[LEFT];
+							this->_root->child[RIGHT] = node->child[RIGHT];
+							node->child[RIGHT]->parent = this->_root;
+							this->_root->color = BLACK;
+						}
+						if (toHandle)
+							insertNode(this->_root, toHandle, this->_root, 0);
+						if (toHandle2)
+							insertNode(this->_root, toHandle2, this->_root, 0);
+					}
+				}
+				this->_alloc.deallocate(node, 1); //Viene deallocato il nodo cancellato e decrementato il valore della variabile _size che tiene traccia della grandezza dell'albero.
+				node = NULL;
+				this->_size--;
+				return (ret); // Viene restituito l'iteratore che punta al successore del nodo cancellato.
 			};
 
-			void clear();
+			void clear()
+			{
+				while(this->_size)
+					this->erase(this->min());
+			};
 
-			value_compare value_comp() const;
+			class value_compare : public std::binary_function<value_type,value_type,bool>
+			{
+				friend class map<Key, T>;
+
+				protected:
+					Compare comp;
+					value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
+				public:
+					bool operator() (const value_type& x, const value_type& y) const
+					{
+						return comp(x.first, y.first);
+					}
+			};
+
+			/* ritorna un oggetto funzione [vedi class value_compare].
+			   Costruisce una funzione di comparazione basata sul template Compare (solitamente assegnato a std::less) */
+			value_compare value_comp() const
+			{
+				return (value_compare(this->key_comp()));
+			};
 
 			iterator find (const key_type& k)
 			{
@@ -205,6 +407,7 @@ namespace ft
 				return (findPointer(start->child[LEFT], val));
 			};
 
+			/* controlla l'esistenza della key all'interno della map. */
 			size_type count (const key_type& k) const
 			{
 				if (find(k).node == this->_sentinel)
@@ -212,57 +415,91 @@ namespace ft
 				return (1);
 			};
 
-			iterator lower_bound (const key_type& k);
-			const_iterator lower_bound (const key_type& k) const;
+			/* ritorna il primo elemento maggiore (basandosi sugli iteratori) della map. */
+			iterator lower_bound (const key_type& k)
+			{
+				iterator	tmp = this->begin();
 
-			iterator upper_bound (const key_type& k);
+				while (tmp != this->end() && this->_c(tmp.node->data.first, k))
+					tmp++;
+				return (tmp);
+			};
+
+			const_iterator lower_bound (const key_type& k) const
+			{
+				const_iterator	tmp = this->begin();
+
+				while (tmp != this->end() && this->_c(tmp.node->data.first, k))
+					tmp++;
+				return (tmp);
+			};
+
+			/* restituisce un iteratore all'elemento con la key strettamente maggiore della key data. */
+			iterator upper_bound (const key_type& k)
+			{
+				iterator	tmp = this->begin();
+
+				while (tmp != this->end() && !this->_c(k, tmp.node->data.first))
+					tmp++;
+				return (tmp);
+			};
+
 			const_iterator upper_bound (const key_type& k) const;
+			{
+				const_iterator	tmp = this->begin();
 
-			pair<iterator,iterator> equal_range (const key_type& k);
-			pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
+				while (tmp != this->end() && !this->_c(k, tmp.node->data.first))
+					tmp++;
+				return (tmp);
+			};
 
+			/*	ritorna un pair con il primo elemento avente la key data e il primo elemento maggiore.
+				Se il first e il second sono uguali, allora non esistono elementi con la chiave data. */
+			ft::pair<iterator,iterator> equal_range (const key_type& k)
+			{
+				return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
+			};
 
-
-
-			//! IMPLEMETATE IN RBTREE
-			iterator begin();
-			const_iterator begin() const;
-			iterator end();
-			const_iterator end() const;
-			reverse_iterator rbegin();
-			const_reverse_iterator rbegin() const;
-
-			bool empty() const;
-			size_type size() const;
-			size_type max_size() const;
-
-			void swap (map& other);
-
-			key_compare key_comp() const;
-
-			allocator_type get_allocator() const;
-
-
-
-
+			ft::pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
+			{
+				return (ft::make_pair(this->lower_bound(key), this->upper_bound(key)));
+			};
 	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator==( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator==( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return ((lhs.size() == rhs.size()) && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator!=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator!=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return (!(lhs == rhs));
+	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator<( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator<=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator<=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return (!(lhs > rhs));
+	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator>( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return (!(lhs == rhs || lhs < rhs));
+	};
 
 	template< class Key, class T, class Compare, class Alloc >
-	bool operator>=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs );
+	bool operator>=( const std::map<Key, T, Compare, Alloc>& lhs, const std::map<Key, T, Compare, Alloc>& rhs )
+	{
+		return (!(lhs < rhs));
+	};
 
 }
