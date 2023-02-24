@@ -25,6 +25,7 @@ namespace ft
 
 			// * COSTRUTTORI * //
 
+			// Default Constructor
 			explicit set(const Compare& comp = Compare(), const Alloc& alloc = Alloc())
 			{
 				this->_key_compare = comp;
@@ -33,6 +34,7 @@ namespace ft
 				(void)alloc;
 			};
 
+			// Range Constructor: [first, last)
 			template <class InputIt>
 			set(InputIt first, InputIt last, const Compare& comp = Compare(), const Alloc& alloc = Alloc())
 			{
@@ -43,6 +45,7 @@ namespace ft
 				(void)alloc;
 			};
 
+			// Copy Constructor
 			set(const set& other)
 			{
 				this->_key_type = other._key_type;
@@ -52,6 +55,7 @@ namespace ft
 					this->insert(other.begin(), other.end());
 			};
 
+			// Copy Assign Operator
 			set&	operator=(const set& rhs)
 			{
 				if (this == &rhs)
@@ -65,6 +69,7 @@ namespace ft
 				return (*this);
 			};
 
+			// Destructor
 			~set()
 			{
 				clear();
@@ -158,6 +163,7 @@ namespace ft
 
 			//------------------------------------------------------//
 
+			/* A differenza di 'map', mi restituisce l'iteratore all'elemento successivo, perchè la chiave è univoca */
 			iterator	erase(iterator pos)
 			{
 				iterator	ret = this->getSuccessor(pos.node);
@@ -166,6 +172,7 @@ namespace ft
 				return (ret);
 			}
 
+			/* La rimozione di un singolo elemento è sufficiente a rimuovere il nodo */
 			iterator	erase(iterator first, iterator last)
 			{
 				while (first != last)
@@ -173,6 +180,14 @@ namespace ft
 				return (last.node);
 			}
 
+			/* Se la funzione erase_deep(key) rimuove almeno un elemento,
+               restituirà un iteratore che punta all'elemento successivo a quello rimosso
+               (o all'iteratore end() se l'elemento rimosso era l'ultimo).
+               In tal caso, la funzione erase restituisce 1 per indicare che almeno un elemento è stato rimosso.
+               Se la funzione erase_deep non rimuove alcun elemento, restituirà un iteratore vuoto,
+               che viene confrontato con un iteratore vuoto per restituire 0.
+               In sostanza, la funzione erase(const Key& key) rimuove tutti gli elementi con la chiave specificata
+               e restituisce il numero di elementi rimossi (0 o 1). */
 			size_type	erase(const Key& key)
 			{
 				if (erase_deep(key) != iterator(NULL, this->_sentinel))
@@ -180,6 +195,7 @@ namespace ft
 				return (0);
 			}
 
+			/* La funzione rimuoverà tutti gli elementi con la chiave specificata */
 			iterator	erase_deep(Key const & val)
 			{
 				pointer		node = this->find(val).node;
